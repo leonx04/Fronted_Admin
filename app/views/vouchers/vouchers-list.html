@@ -1,4 +1,7 @@
-<!-- vouchers-list.html -->
+<!DOCTYPE html>
+<div id="loading-overlay" ng-show="isLoading">
+    <div class="spinner"></div>
+</div>
 <div ng-controller="VouchersController">
     <h3 class="h3 mb-2 text-gray-800">Quản lý voucher</h3>
 
@@ -29,13 +32,16 @@
                     </select>
                 </div>
                 <div class="col-md-3 mb-3">
-                    <input type="number" class="form-control" ng-model="searchParams.minValue" placeholder="Giá trị tối thiểu">
+                    <input type="number" class="form-control" ng-model="searchParams.minValue"
+                        placeholder="Giá trị tối thiểu">
                 </div>
                 <div class="col-md-3 mb-3">
-                    <input type="number" class="form-control" ng-model="searchParams.maxValue" placeholder="Giá trị tối đa">
+                    <input type="number" class="form-control" ng-model="searchParams.maxValue"
+                        placeholder="Giá trị tối đa">
                 </div>
                 <div class="col-md-3 mb-3">
-                    <input type="date" class="form-control" ng-model="searchParams.startDate" placeholder="Ngày bắt đầu">
+                    <input type="date" class="form-control" ng-model="searchParams.startDate"
+                        placeholder="Ngày bắt đầu">
                 </div>
                 <div class="col-md-3 mb-3">
                     <input type="date" class="form-control" ng-model="searchParams.endDate" placeholder="Ngày kết thúc">
@@ -84,13 +90,16 @@
                             </td>
                             <td>
                                 <div class="d-flex justify-content-between">
-                                    <button class="btn btn-sm btn-info flex-fill mx-1" ng-click="viewVoucher(voucher.id)">
+                                    <button class="btn btn-sm btn-info flex-fill mx-1"
+                                        ng-click="viewVoucher(voucher.id)">
                                         <i class="fa fa-eye"></i>
                                     </button>
-                                    <button class="btn btn-sm btn-warning flex-fill mx-1" ng-click="editVoucher(voucher.id)">
+                                    <button class="btn btn-sm btn-warning flex-fill mx-1"
+                                        ng-click="editVoucher(voucher.id)">
                                         <i class="fa fa-edit"></i>
                                     </button>
-                                    <button class="btn btn-sm btn-danger flex-fill mx-1" ng-click="openDeleteConfirmModal(voucher.id)">
+                                    <button class="btn btn-sm btn-danger flex-fill mx-1"
+                                        ng-click="openDeleteConfirmModal(voucher.id)">
                                         <i class="fa fa-trash"></i>
                                     </button>
                                 </div>
@@ -103,7 +112,8 @@
     </div>
 
     <!-- Add/Edit Voucher Modal -->
-    <div class="modal fade" id="voucherModal" tabindex="-1" role="dialog" aria-labelledby="voucherModalLabel" aria-hidden="true">
+    <div class="modal fade" id="voucherModal" tabindex="-1" role="dialog" aria-labelledby="voucherModalLabel"
+        aria-hidden="true">
         <div class="modal-dialog" role="document">
             <div class="modal-content">
                 <div class="modal-header">
@@ -121,70 +131,81 @@
                             </div>
                             <div class="col-md-6">
                                 <label for="description">Mô tả</label>
-                                <input type="text" class="form-control" id="description" ng-model="voucherData.description" required>
+                                <input type="text" class="form-control" id="description"
+                                    ng-model="voucherData.description" required>
                             </div>
                         </div>
                         <div class="row mb-3">
                             <div class="col-md-6">
                                 <label for="startDate">Ngày bắt đầu</label>
-                                <input type="datetime-local" class="form-control" id="startDate" ng-model="voucherData.startDate" required>
+                                <input type="datetime-local" class="form-control" id="startDate"
+                                    ng-model="voucherData.startDate" required>
                             </div>
                             <div class="col-md-6">
                                 <label for="endDate">Ngày kết thúc</label>
-                                <input type="datetime-local" class="form-control" id="endDate" ng-model="voucherData.endDate" required>
+                                <input type="datetime-local" class="form-control" id="endDate"
+                                    ng-model="voucherData.endDate" required>
                             </div>
                         </div>
                         <div class="row mb-3">
                             <div class="col-md-6">
                                 <label for="discountValue">Giá trị giảm giá</label>
-                                <input type="number" class="form-control" id="discountValue" ng-model="voucherData.discountValue" required>
+                                <input type="number" class="form-control" id="discountValue"
+                                    ng-model="voucherData.discountValue" required>
                             </div>
                             <div class="col-md-6">
                                 <label for="minimumOrderValue">Giá trị đơn hàng tối thiểu</label>
-                                <input type="number" class="form-control" id="minimumOrderValue" ng-model="voucherData.minimumOrderValue" required>
+                                <input type="number" class="form-control" id="minimumOrderValue"
+                                    ng-model="voucherData.minimumOrderValue" required>
                             </div>
                         </div>
                         <div class="row mb-3">
                             <div class="col-md-6">
                                 <label for="voucherType">Loại Voucher</label>
-                                <select class="form-control" id="voucherType" ng-model="voucherData.voucherType" required>
+                                <select class="form-control" id="voucherType" ng-model="voucherData.voucherType"
+                                    required>
                                     <option value="">-Chọn loại voucher-</option>
                                     <option value="percentage">Phần trăm</option>
                                     <option value="fixed">Cố định</option>
                                     <option value="freeship">Miễn phí giao hàng</option>
                                 </select>
                             </div>
-                            <div class="col-md-6">
-                                <label for="status">Trạng thái</label>
-                                <select class="form-control" id="status" name="voucherData.status" ng-model="voucherData.status" required>
-                                    <option value="">-Chọn trạng thái-</option>
+                            <div class="col-md-6" ng-if="isEditing">
+                                <label for="voucherStatus">Trạng thái</label>
+                                <select class="form-control" id="voucherStatus" ng-model="voucherData.status">
+                                    <option value="">-Chọn trạng thái-</option>
                                     <option value="1">Hoạt động</option>
                                     <option value="0">Không hoạt động</option>
                                 </select>
                             </div>
+
                         </div>
                         <div class="row mb-3">
                             <div class="col-md-6">
                                 <label for="maximumDiscountAmount">Số tiền giảm tối đa</label>
-                                <input type="number" class="form-control" id="maximumDiscountAmount" ng-model="voucherData.maximumDiscountAmount" required>
+                                <input type="number" class="form-control" id="maximumDiscountAmount"
+                                    ng-model="voucherData.maximumDiscountAmount" required>
                             </div>
                             <div class="col-md-6">
                                 <label for="quantity">Số lượng</label>
-                                <input type="number" class="form-control" id="quantity" ng-model="voucherData.quantity" required>
+                                <input type="number" class="form-control" id="quantity" ng-model="voucherData.quantity"
+                                    required>
                             </div>
                         </div>
                     </form>
                 </div>
                 <div class="modal-footer">
                     <button type="button" class="btn btn-secondary" data-dismiss="modal">Đóng</button>
-                    <button type="button" class="btn btn-primary" ng-click="saveVoucher()" ng-disabled="voucherForm.$invalid">Lưu</button>
+                    <button type="button" class="btn btn-primary" ng-click="saveVoucher()"
+                        ng-disabled="voucherForm.$invalid">Lưu</button>
                 </div>
             </div>
         </div>
     </div>
 
     <!-- View Voucher Modal -->
-    <div class="modal fade" id="viewVoucherModal" tabindex="-1" role="dialog" aria-labelledby="viewVoucherModalLabel" aria-hidden="true">
+    <div class="modal fade" id="viewVoucherModal" tabindex="-1" role="dialog" aria-labelledby="viewVoucherModalLabel"
+        aria-hidden="true">
         <div class="modal-dialog modal-lg" role="document">
             <div class="modal-content">
                 <div class="modal-header border-0">
@@ -225,4 +246,3 @@
     </div>
 </div>
 
-<!-- voucher-list.controller.js -->

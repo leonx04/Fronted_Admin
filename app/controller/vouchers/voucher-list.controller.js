@@ -1,51 +1,74 @@
-app.controller('VouchersController', function ($scope, $http) {
+app.controller('VouchersController', function ($scope, $http, $interval) {
     const API_URL = "http://localhost:8080/api/admin/vouchers";
     $scope.vouchers = [];
     $scope.searchParams = {};
     $scope.voucherData = {};
     $scope.isEditing = false;
+    $scope.isLoading = false;
     let currentVoucherId = null;
 
-    // Load initial data
+    // Tải dữ liệu ban đầu
     $scope.loadData = function() {
+        $scope.isLoading = true;
         $http.get(API_URL)
             .then(function(response) {
                 $scope.vouchers = response.data;
             })
             .catch(function(error) {
-                console.error("Error fetching vouchers:", error);
+                console.error("Lỗi khi tải danh sách voucher:", error);
                 toastr.error("Có lỗi khi lấy danh sách voucher!");
+            })
+            .finally(function() {
+                $scope.isLoading = false;
             });
     };
 
-    // Search vouchers
+    // Cập nhật dữ liệu mỗi giây
+    $interval(function() {
+        if (!$scope.isLoading) {
+            $http.get(API_URL)
+                .then(function(response) {
+                    $scope.vouchers = response.data;
+                })
+                .catch(function(error) {
+                    console.error("Lỗi khi cập nhật danh sách voucher:", error);
+                });
+        }
+    }, 1000);
+
+    // Tìm kiếm voucher
     $scope.searchVouchers = function() {
+        $scope.isLoading = true;
         $http.get(API_URL + "/search", { params: $scope.searchParams })
             .then(function(response) {
                 $scope.vouchers = response.data;
             })
             .catch(function(error) {
-                console.error("Error searching vouchers:", error);
+                console.error("Lỗi khi tìm kiếm voucher:", error);
                 toastr.error("Có lỗi khi tìm kiếm voucher!");
+            })
+            .finally(function() {
+                $scope.isLoading = false;
             });
     };
 
-    // Reset search form
+    // Đặt lại biểu mẫu tìm kiếm
     $scope.resetForm = function() {
         $scope.searchParams = {};
         $scope.loadData();
     };
 
-    // Open add modal
+    // Mở modal thêm mới
     $scope.openAddModal = function() {
         $scope.isEditing = false;
         $scope.voucherData = {};
         $('#voucherModal').modal('show');
     };
 
-    // Edit voucher
+    // Chỉnh sửa voucher
     $scope.editVoucher = function(id) {
         $scope.isEditing = true;
+        $scope.isLoading = true;
         $http.get(API_URL + "/" + id)
             .then(function(response) {
                 $scope.voucherData = response.data;
@@ -55,36 +78,48 @@ app.controller('VouchersController', function ($scope, $http) {
                 $('#voucherModal').modal('show');
             })
             .catch(function(error) {
-                console.error("Error fetching voucher details:", error);
+                console.error("Lỗi khi lấy thông tin voucher:", error);
                 toastr.error("Có lỗi khi lấy thông tin voucher!");
+            })
+            .finally(function() {
+                $scope.isLoading = false;
             });
     };
 
-    // Save voucher (add or update)
+    // Lưu voucher (thêm mới hoặc cập nhật)
     $scope.saveVoucher = function() {
+        $scope.isLoading = true;
         let url = API_URL;
         let method = 'POST';
+        let dataToSend = { ...$scope.voucherData };
+
         if ($scope.isEditing) {
             url += "/update/" + currentVoucherId;
             method = 'PUT';
+        } else {
+            // Khi thêm mới, không gửi trường status
+            delete dataToSend.status;
         }
 
         $http({
             method: method,
             url: url,
-            data: $scope.voucherData
+            data: dataToSend
         }).then(function(response) {
             $('#voucherModal').modal('hide');
             $scope.loadData();
             toastr.success("Lưu voucher thành công!");
         }).catch(function(error) {
-            console.error("Error saving voucher:", error);
+            console.error("Lỗi khi lưu voucher:", error);
             toastr.error("Có lỗi khi lưu voucher!");
+        }).finally(function() {
+            $scope.isLoading = false;
         });
     };
 
-    // View voucher details
+    // Xem chi tiết voucher
     $scope.viewVoucher = function(id) {
+        $scope.isLoading = true;
         $http.get(API_URL + "/" + id)
             .then(function(response) {
                 const voucher = response.data;
@@ -104,19 +139,23 @@ app.controller('VouchersController', function ($scope, $http) {
                 $('#viewVoucherModal').modal('show');
             })
             .catch(function(error) {
-                console.error("Error fetching voucher details:", error);
+                console.error("Lỗi khi lấy thông tin chi tiết voucher:", error);
                 toastr.error("Có lỗi khi lấy thông tin voucher!");
+            })
+            .finally(function() {
+                $scope.isLoading = false;
             });
     };
 
-    // Open delete confirm modal
+    // Mở modal xác nhận xóa
     $scope.openDeleteConfirmModal = function(id) {
         currentVoucherId = id;
         $('#deleteConfirmModal').modal('show');
     };
 
-    // Delete voucher
+    // Xóa voucher
     $scope.deleteVoucher = function() {
+        $scope.isLoading = true;
         $http.delete(API_URL + "/delete/" + currentVoucherId)
             .then(function(response) {
                 $('#deleteConfirmModal').modal('hide');
@@ -124,12 +163,15 @@ app.controller('VouchersController', function ($scope, $http) {
                 toastr.success("Xóa voucher thành công!");
             })
             .catch(function(error) {
-                console.error("Error deleting voucher:", error);
+                console.error("Lỗi khi xóa voucher:", error);
                 toastr.error("Có lỗi khi xóa voucher!");
+            })
+            .finally(function() {
+                $scope.isLoading = false;
             });
     };
 
-    // Helper functions
+    // Các hàm hỗ trợ
     $scope.getVoucherTypeDisplay = function(type) {
         switch (type) {
             case "fixed": return "Cố định";
@@ -153,6 +195,7 @@ app.controller('VouchersController', function ($scope, $http) {
             case 0: return "Không hoạt động";
             case 1: return "Hoạt động";
             case 2: return "Hết hạn";
+            case 3: return "Chờ hoạt động";
             default: return "Không xác định";
         }
     };
@@ -162,6 +205,7 @@ app.controller('VouchersController', function ($scope, $http) {
             case 0: return "badge-secondary";
             case 1: return "badge-success";
             case 2: return "badge-danger";
+            case 3: return "badge-warning";
             default: return "badge-warning";
         }
     };
@@ -175,6 +219,6 @@ app.controller('VouchersController', function ($scope, $http) {
         }).format(amount);
     };
 
-    // Initialize
+    // Khởi tạo
     $scope.loadData();
 });
