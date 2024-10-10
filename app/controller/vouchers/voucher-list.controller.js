@@ -218,10 +218,11 @@ app.controller('VouchersController', function ($scope, $http, $interval) {
     // Hàm hỗ trợ: Hiển thị trạng thái voucher
     $scope.getStatusDisplay = function(status) {
         switch (status) {
-            case 0: return "Không hoạt động";
+            case 0: return "Đã hết";
             case 1: return "Hoạt động";
-            case 2: return "Hết hạn";
+            case 2: return "Không hoạt động";
             case 3: return "Chờ hoạt động";
+            case 4: return "Đã kết thúc"
             default: return "Không xác định";
         }
     };
@@ -231,8 +232,9 @@ app.controller('VouchersController', function ($scope, $http, $interval) {
         switch (status) {
             case 0: return "badge-secondary";
             case 1: return "badge-success";
-            case 2: return "badge-danger";
+            case 2: return "badge-info";
             case 3: return "badge-warning";
+            case 4: return "badge-danger"
             default: return "badge-warning";
         }
     };

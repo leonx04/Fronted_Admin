@@ -29,12 +29,12 @@
                         </div>
                         <div class="form-group col-md-3">
                             <label for="searchStartDate">Ngày bắt đầu</label>
-                            <input type="date" class="form-control" id="searchStartDate"
+                            <input type="datetime-local" class="form-control" id="searchStartDate"
                                 ng-model="searchParams.startDate">
                         </div>
                         <div class="form-group col-md-3">
                             <label for="searchEndDate">Ngày kết thúc</label>
-                            <input type="date" class="form-control" id="searchEndDate" ng-model="searchParams.endDate">
+                            <input type="datetime-local" class="form-control" id="searchEndDate" ng-model="searchParams.endDate">
                         </div>
                     </div>
                     <div class="form-row">
@@ -78,7 +78,7 @@
                                 <td>{{promotion.code}}</td>
                                 <td>{{promotion.name}}</td>
                                 <td>{{promotion.quantity}}</td>
-                                <td>{{promotion.discountPercent}}%</td>
+                                <td>{{promotion.discountPercentage}}%</td>
                                 <td>{{promotion.startDate | date:'dd/MM/yyyy HH:mm:ss'}}</td>
                                 <td>{{promotion.endDate | date:'dd/MM/yyyy HH:mm:ss'}}</td>
                                 <td>
@@ -146,26 +146,19 @@
                                     ng-model="promotionData.quantity" required>
                             </div>
                             <div class="form-group col-md-4">
-                                <label for="discountPercent">Giá trị giảm giá (%)</label>
-                                <input type="number" step="0.01" class="form-control" id="discountPercent"
-                                    ng-model="promotionData.discountPercent" required>
+                                <label for="discountPercentage">Giá trị giảm giá (%)</label>
+                                <input type="number" step="0.01" class="form-control" id="discountPercentage"
+                                    ng-model="promotionData.discountPercentage" required>
                             </div>
                             <div class="form-group col-md-4" ng-if="isEditing">
                                 <label for="status">Trạng thái</label>
                                 <select class="form-control" id="status" ng-model="promotionData.status">
                                     <option value="1">Hoạt động</option>
-                                    <option value="0">Không hoạt động</option>
+                                    <option value="3">Chờ hoạt động</option>
+                                    <option value="2">Không hoạt động</option>
+                                    <option value="4">Hết hạn</option>
+                                    <option value="0">Đã hết</option>
                                 </select>
-                            </div>
-                        </div>
-                        <div class="form-row">
-                            <div class="form-group col-md-6">
-                                <label for="addBy">Người thêm</label>
-                                <input type="text" class="form-control" id="addBy" ng-model="promotionData.addBy">
-                            </div>
-                            <div class="form-group col-md-6">
-                                <label for="editBy">Người chỉnh sửa</label>
-                                <input type="text" class="form-control" id="editBy" ng-model="promotionData.editBy">
                             </div>
                         </div>
                     </form>
