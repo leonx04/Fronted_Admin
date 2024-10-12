@@ -110,7 +110,7 @@
                                     <button class="btn btn-sm btn-info" ng-click="viewVoucher(voucher.id)">
                                         <i class="fas fa-eye"></i>
                                     </button>
-                                    <button class="btn btn-sm btn-warning" ng-click="editVoucher(voucher.id)">
+                                    <button class="btn btn-primary btn-sm" ng-click="editVoucher(voucher.id)" ng-if="voucher.status !== 2">
                                         <i class="fas fa-edit"></i>
                                     </button>
                                     <button class="btn btn-sm btn-danger" ng-click="openDeleteConfirmModal(voucher.id)">

@@ -116,21 +116,27 @@
                 </div>
             </li>
 
-            <!-- Nav Item - Quản Lý Khuyến Mãi -->
+            <!-- Nav Item - Quản Lý Thuộc tính Sản Phẩm -->
             <li class="nav-item">
-                <a class="nav-link" href="#!/promotions">
-                    <i class="fas fa-fw fa-percent"></i>
-                    <span>Quản Lý Khuyến Mãi</span>
+                <a class="nav-link collapsed" href="#" data-toggle="collapse" data-target="#collapseDiscount"
+                    aria-expanded="true" aria-controls="collapseDiscount">
+                    <i class="fas fa-gift"></i>
+                    <span>Giảm giá</span>
                 </a>
+                <div id="collapseDiscount" class="collapse" aria-labelledby="headingAttributes"
+                    data-parent="#accordionSidebar">
+                    <div class="bg-white py-2 collapse-inner rounded">
+                        <a class="collapse-item" href="#!/promotions">
+                            <i class="fas fa-fw fa-percent"></i>
+                            <span>Đợt giảm giá</span>
+                        </a>
+                        <a class="collapse-item" href="#!/vouchers">
+                            <i class="fas fa-fw fa-ticket-alt"></i>
+                            <span>Phiếu giảm giá</span></a>
+                    </div>
+                </div>
             </li>
 
-            <!-- Nav Item - Quản lý voucher -->
-            <li class="nav-item">
-                <a class="nav-link" href="#!/vouchers">
-                    <i class="fas fa-fw fa-ticket-alt"></i>
-                    <span>Quản lý voucher</span>
-                </a>
-            </li>
 
             <!-- Nav Item - Quản Lý Nhân Viên -->
             <li class="nav-item">
