@@ -1,5 +1,195 @@
 <!DOCTYPE html>
-<div class="container">
-    <h1>{{message}}</h1>
-    <!-- Add more content for the home page -->
+
+
+<div ng-controller="PromotionsController">
+    <div id="loading-overlay" ng-show="isLoading">
+        <div class="spinner"></div>
+    </div>
+
+    <div class="container-fluid mt-4">
+        <h2 class="mb-4 text-primary"><i class="fas fa-fw fa-percent"></i>Quản lý Khuyến mãi</h2>
+
+        <!-- Search Form -->
+        <div class="card shadow mb-4">
+            <div class="card-header py-3">
+                <h6 class="m-0 font-weight-bold text-primary">Tìm kiếm Khuyến mãi</h6>
+            </div>
+            <div class="card-body">
+                <form ng-submit="searchPromotions()">
+                    <div class="form-row">
+                        <div class="form-group col-md-3">
+                            <label for="searchCode">Mã khuyến mãi</label>
+                            <input type="text" class="form-control" id="searchCode" ng-model="searchParams.code"
+                                placeholder="Nhập mã khuyến mãi">
+                        </div>
+                        <div class="form-group col-md-3">
+                            <label for="searchName">Tên khuyến mãi</label>
+                            <input type="text" class="form-control" id="searchName" ng-model="searchParams.name"
+                                placeholder="Nhập tên khuyến mãi">
+                        </div>
+                        <div class="form-group col-md-3">
+                            <label for="searchStartDate">Ngày bắt đầu</label>
+                            <input type="datetime-local" class="form-control" id="searchStartDate"
+                                ng-model="searchParams.startDate">
+                        </div>
+                        <div class="form-group col-md-3">
+                            <label for="searchEndDate">Ngày kết thúc</label>
+                            <input type="datetime-local" class="form-control" id="searchEndDate" ng-model="searchParams.endDate">
+                        </div>
+                    </div>
+                    <div class="form-row">
+                        <div class="col-md-6">
+                            <button type="submit" class="btn btn-primary"><i class="fas fa-search mr-2"></i>Tìm
+                                kiếm</button>
+                            <button type="button" class="btn btn-secondary ml-2" ng-click="resetForm()"><i
+                                    class="fas fa-undo mr-2"></i>Đặt lại</button>
+                        </div>
+                        <div class="col-md-6 text-right">
+                            <button type="button" class="btn btn-success" ng-click="openAddModal()"><i
+                                    class="fas fa-plus mr-2"></i>Thêm khuyến mãi</button>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </div>
+
+        <!-- Promotions List -->
+        <div class="card shadow mb-4">
+            <div class="card-header py-3">
+                <h6 class="m-0 font-weight-bold text-primary">Danh sách Khuyến mãi</h6>
+            </div>
+            <div class="card-body">
+                <div class="table-responsive">
+                    <table class="table table-bordered table-hover">
+                        <thead class="thead-light">
+                            <tr>
+                                <th>Mã</th>
+                                <th>Tên</th>
+                                <th>Số lượng</th>
+                                <th>Giá trị</th>
+                                <th>Ngày bắt đầu</th>
+                                <th>Ngày kết thúc</th>
+                                <th>Trạng thái</th>
+                                <th>Hành động</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr ng-repeat="promotion in promotions">
+                                <td>{{promotion.code}}</td>
+                                <td>{{promotion.name}}</td>
+                                <td>{{promotion.quantity}}</td>
+                                <td>{{promotion.discountPercentage}}%</td>
+                                <td>{{promotion.startDate | date:'dd/MM/yyyy HH:mm:ss'}}</td>
+                                <td>{{promotion.endDate | date:'dd/MM/yyyy HH:mm:ss'}}</td>
+                                <td>
+                                    <span class="badge" ng-class="getStatusBadgeClass(promotion.status)">
+                                        {{getStatusDisplay(promotion.status)}}
+                                    </span>
+                                </td>
+                                <td>
+                                    <button class="btn btn-sm btn-primary mr-1"
+                                        ng-click="editPromotion(promotion.id)"><i class="fas fa-edit"></i></button>
+                                    <button class="btn btn-sm btn-danger"
+                                        ng-click="openDeleteConfirmModal(promotion.id)"><i
+                                            class="fas fa-trash"></i></button>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Promotion Modal -->
+    <div class="modal fade" id="PromotionModal" tabindex="-1" role="dialog" aria-labelledby="promotionModalLabel"
+        aria-hidden="true">
+        <div class="modal-dialog modal-lg" role="document">
+            <div class="modal-content">
+                <div class="modal-header bg-primary text-white">
+                    <h5 class="modal-title" id="promotionModalLabel">{{isEditing ? 'Chỉnh Sửa' : 'Thêm'}} Khuyến mãi
+                    </h5>
+                    <button type="button" class="close text-white" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    <form>
+                        <div class="form-row">
+                            <div class="form-group col-md-6">
+                                <label for="code">Mã khuyến mãi</label>
+                                <input type="text" class="form-control" id="code" ng-model="promotionData.code"
+                                    required>
+                            </div>
+                            <div class="form-group col-md-6">
+                                <label for="name">Tên khuyến mãi</label>
+                                <input type="text" class="form-control" id="name" ng-model="promotionData.name"
+                                    required>
+                            </div>
+                        </div>
+                        <div class="form-row">
+                            <div class="form-group col-md-6">
+                                <label for="startDate">Ngày bắt đầu</label>
+                                <input type="datetime-local" class="form-control" id="startDate"
+                                    ng-model="promotionData.startDate" required>
+                            </div>
+                            <div class="form-group col-md-6">
+                                <label for="endDate">Ngày kết thúc</label>
+                                <input type="datetime-local" class="form-control" id="endDate"
+                                    ng-model="promotionData.endDate" required>
+                            </div>
+                        </div>
+                        <div class="form-row">
+                            <div class="form-group col-md-4">
+                                <label for="quantity">Số lượng</label>
+                                <input type="number" class="form-control" id="quantity"
+                                    ng-model="promotionData.quantity" required>
+                            </div>
+                            <div class="form-group col-md-4">
+                                <label for="discountPercentage">Giá trị giảm giá (%)</label>
+                                <input type="number" step="0.01" class="form-control" id="discountPercentage"
+                                    ng-model="promotionData.discountPercentage" required>
+                            </div>
+                            <div class="form-group col-md-4" ng-if="isEditing">
+                                <label for="status">Trạng thái</label>
+                                <select class="form-control" id="status" ng-model="promotionData.status">
+                                    <option value="1">Hoạt động</option>
+                                    <option value="3">Chờ hoạt động</option>
+                                    <option value="2">Không hoạt động</option>
+                                    <option value="4">Hết hạn</option>
+                                    <option value="0">Đã hết</option>
+                                </select>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Đóng</button>
+                    <button type="button" class="btn btn-primary" ng-click="savePromotion()">Lưu</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Delete Confirmation Modal -->
+    <div class="modal fade" id="deleteConfirmModal" tabindex="-1" role="dialog"
+        aria-labelledby="deleteConfirmModalLabel" aria-hidden="true">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header bg-danger text-white">
+                    <h5 class="modal-title" id="deleteConfirmModalLabel">Xác nhận xóa</h5>
+                    <button type="button" class="close text-white" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    Bạn có chắc chắn muốn xóa khuyến mãi này không?
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Hủy</button>
+                    <button type="button" class="btn btn-danger" ng-click="deletePromotion()">Xóa</button>
+                </div>
+            </div>
+        </div>
+    </div>
 </div>
