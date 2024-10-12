@@ -123,7 +123,13 @@ app.controller('PromotionsController', function($scope, $http, $interval) {
             // Khi thêm mới, không gửi trường status
             delete dataToSend.status;
         }
-
+        // Chuyển đổi ngày giờ sang định dạng ISO 8601
+        if (dataToSend.startDate) {
+            dataToSend.startDate = new Date(dataToSend.startDate).toISOString();
+        }
+        if (dataToSend.endDate) {
+            dataToSend.endDate = new Date(dataToSend.endDate).toISOString();
+        }
         $http({
             method: method,
             url: url,

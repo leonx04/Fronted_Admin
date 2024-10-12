@@ -34,7 +34,8 @@
                         </div>
                         <div class="form-group col-md-3">
                             <label for="searchEndDate">Ngày kết thúc</label>
-                            <input type="datetime-local" class="form-control" id="searchEndDate" ng-model="searchParams.endDate">
+                            <input type="datetime-local" class="form-control" id="searchEndDate"
+                                ng-model="searchParams.endDate">
                         </div>
                     </div>
                     <div class="form-row">
@@ -65,7 +66,6 @@
                             <tr>
                                 <th>Mã</th>
                                 <th>Tên</th>
-                                <th>Số lượng</th>
                                 <th>Giá trị</th>
                                 <th>Ngày bắt đầu</th>
                                 <th>Ngày kết thúc</th>
@@ -77,7 +77,6 @@
                             <tr ng-repeat="promotion in promotions">
                                 <td>{{promotion.code}}</td>
                                 <td>{{promotion.name}}</td>
-                                <td>{{promotion.quantity}}</td>
                                 <td>{{promotion.discountPercentage}}%</td>
                                 <td>{{promotion.startDate | date:'dd/MM/yyyy HH:mm:ss'}}</td>
                                 <td>{{promotion.endDate | date:'dd/MM/yyyy HH:mm:ss'}}</td>
@@ -130,27 +129,22 @@
                         <div class="form-row">
                             <div class="form-group col-md-6">
                                 <label for="startDate">Ngày bắt đầu</label>
-                                <input type="datetime-local" class="form-control" id="startDate"
-                                    ng-model="promotionData.startDate" required>
+                                <input type="datetime-local" id="startDate" name="startDate" class="form-control"
+                                    ng-model="promotionData.startDate" step="1" required>
                             </div>
                             <div class="form-group col-md-6">
                                 <label for="endDate">Ngày kết thúc</label>
-                                <input type="datetime-local" class="form-control" id="endDate"
-                                    ng-model="promotionData.endDate" required>
+                                <input type="datetime-local" id="endDate" name="endDate" class="form-control"
+                                    ng-model="promotionData.endDate" step="1" required>
                             </div>
                         </div>
                         <div class="form-row">
-                            <div class="form-group col-md-4">
-                                <label for="quantity">Số lượng</label>
-                                <input type="number" class="form-control" id="quantity"
-                                    ng-model="promotionData.quantity" required>
-                            </div>
-                            <div class="form-group col-md-4">
+                            <div class="form-group col-md-6">
                                 <label for="discountPercentage">Giá trị giảm giá (%)</label>
                                 <input type="number" step="0.01" class="form-control" id="discountPercentage"
                                     ng-model="promotionData.discountPercentage" required>
                             </div>
-                            <div class="form-group col-md-4" ng-if="isEditing">
+                            <div class="form-group col-md-6" ng-if="isEditing">
                                 <label for="status">Trạng thái</label>
                                 <select class="form-control" id="status" ng-model="promotionData.status">
                                     <option value="1">Hoạt động</option>
