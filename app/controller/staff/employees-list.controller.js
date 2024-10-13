@@ -1,95 +1,78 @@
-app.controller('EmployeeController', function ($scope, EmployeeService) {
-    
-    $scope.employees = [];
-    $scope.employeeData = {};
-    $scope.isEditing = false;
-    $scope.searchParams = {};
 
-    // Get list of employees
-    $scope.getEmployees = function () {
-        EmployeeService.getAll().then(function (response) {
-            $scope.employees = response.data;
-        });
+app.controller('EmployeesController', ['$scope', '$http', function($scope, $http) {
+    const API_URL = "http://localhost:8080/api/admin/employees"; // Đường dẫn API
+
+    $scope.employees = []; // Danh sách nhân viên
+    $scope.employeeData = {}; // Dữ liệu nhân viên
+    $scope.searchQuery = ''; // Truy vấn tìm kiếm
+
+    // Hàm tải dữ liệu nhân viên
+    $scope.loadData = function() {
+        $http.get(API_URL)
+            .then(function(response) {
+                $scope.employees = response.data;
+            })
+            .catch(function(error) {
+                console.error("Lỗi khi tải danh sách nhân viên:", error);
+            });
     };
 
-    // Open Add Employee Modal
-    $scope.openAddModal = function () {
-        $scope.employeeData = {};
-        $scope.isEditing = false;
+    // Hàm mở modal thêm nhân viên
+    $scope.openAddModal = function() {
+        $scope.employeeData = {}; // Reset dữ liệu
         $('#employeeModal').modal('show');
     };
 
-    // Open Edit Employee Modal
-    $scope.editEmployee = function (id) {
-        EmployeeService.getById(id).then(function (response) {
-            $scope.employeeData = response.data;
-            $scope.isEditing = true;
-            $('#employeeModal').modal('show');
+    // Hàm xem chi tiết nhân viên
+    $scope.viewEmployee = function(id) {
+        $http.get(API_URL + "/" + id)
+            .then(function(response) {
+                $scope.employeeData = response.data;
+                $('#employeeModal').modal('show');
+            })
+            .catch(function(error) {
+                console.error("Lỗi khi lấy thông tin nhân viên:", error);
+            });
+    };
+
+    // Hàm chỉnh sửa nhân viên
+    $scope.editEmployee = function(id) {
+        $http.get(API_URL + "/" + id)
+            .then(function(response) {
+                $scope.employeeData = response.data;
+                $('#employeeModal').modal('show');
+            })
+            .catch(function(error) {
+                console.error("Lỗi khi lấy thông tin nhân viên:", error);
+            });
+    };
+
+    // Hàm lưu nhân viên
+    $scope.saveEmployee = function() {
+        const method = $scope.employeeData.id ? 'PUT' : 'POST';
+        const url = $scope.employeeData.id ? `${API_URL}/${$scope.employeeData.id}` : API_URL;
+
+        $http({
+            method: method,
+            url: url,
+            data: $scope.employeeData
+        }).then(function(response) {
+            $('#employeeModal').modal('hide');
+            $scope.loadData();
+        }).catch(function(error) {
+            console.error("Lỗi khi lưu nhân viên:", error);
         });
     };
 
-    // Save Employee (Add or Edit)
-    $scope.saveEmployee = function () {
-        if ($scope.isEditing) {
-            EmployeeService.update($scope.employeeData).then(function (response) {
-                $('#employeeModal').modal('hide');
-                $scope.getEmployees();
-            });
-        } else {
-            EmployeeService.create($scope.employeeData).then(function (response) {
-                $('#employeeModal').modal('hide');
-                $scope.getEmployees();
-            });
-        }
+    // Hàm lấy tên chức vụ
+    $scope.getRoleName = function(roleid) {
+        const roles = {
+            1: 'Quản Lý',
+            2: 'Nhân Viên',
+        };
+        return roles[roleid] || 'Không xác định';
     };
 
-    // Delete Employee
-    $scope.openDeleteModal = function (id) {
-        if (confirm('Bạn có chắc chắn muốn xóa?')) {
-            EmployeeService.delete(id).then(function (response) {
-                $scope.getEmployees();
-            });
-        }
-    };
-
-    // Search Employees
-    $scope.searchEmployees = function () {
-        EmployeeService.search($scope.searchParams).then(function (response) {
-            $scope.employees = response.data;
-        });
-    };
-
-    // Reset Search Form
-    $scope.resetForm = function () {
-        $scope.searchParams = {};
-        $scope.getEmployees();
-    };
-
-    $scope.getEmployees();
-});
-
-app.service('EmployeeService', function ($http) {
-    this.getAll = function () {
-        return $http.get('/api/admin/employees');
-    };
-
-    this.getById = function (id) {
-        return $http.get('/api/admin/employees/' + id);
-    };
-
-    this.create = function (employee) {
-        return $http.post('/api/admin/employees', employee);
-    };
-
-    this.update = function (employee) {
-        return $http.put('/api/admin/employees/' + employee.id, employee);
-    };
-
-    this.delete = function (id) {
-        return $http.delete('/api/admin/employees/' + id);
-    };
-
-    this.search = function (params) {
-        return $http.post('/api/admin/employees/search', params);
-    };
-});
+    // Khởi tạo dữ liệu khi controller được khởi động
+    $scope.loadData();
+}]);
