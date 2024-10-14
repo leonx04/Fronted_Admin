@@ -74,6 +74,10 @@ app.config(function ($routeProvider) {
       templateUrl: 'app/views/exception/404.html',
       controller: '404Controllers'
     })
+    .when('/add-promotion', {
+      templateUrl: 'app/views/promotion/promotion-add.html',
+      controller: 'AddPromotionController'
+    })
     .otherwise({
       redirectTo: '/'
     });

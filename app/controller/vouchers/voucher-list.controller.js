@@ -39,7 +39,7 @@ app.controller('VouchersController', function ($scope, $http, $interval, $timeou
             updateVoucherData(response.data);
             startAutoUpdate();
         }).catch(handleError("Lỗi khi tải danh sách voucher"))
-          .finally(() => $scope.isLoading = false);
+            .finally(() => $scope.isLoading = false);
     };
 
     // Hàm cập nhật dữ liệu voucher
@@ -96,7 +96,7 @@ app.controller('VouchersController', function ($scope, $http, $interval, $timeou
 
     // Hàm mở modal thêm voucher
     $scope.openAddModal = function () {
-        $timeout(function() {
+        $timeout(function () {
             $scope.isEditing = false;
             $scope.voucherData = {
                 startDate: new Date(),
@@ -115,7 +115,7 @@ app.controller('VouchersController', function ($scope, $http, $interval, $timeou
                 $scope.voucherData.startDate = new Date($scope.voucherData.startDate);
                 $scope.voucherData.endDate = new Date($scope.voucherData.endDate);
                 currentVoucherId = id;
-                $timeout(function() {
+                $timeout(function () {
                     $scope.isEditing = true;
                     $('#voucherModal').modal('show');
                     $scope.$apply();
@@ -213,7 +213,7 @@ app.controller('VouchersController', function ($scope, $http, $interval, $timeou
                 toastr.success("Xóa voucher thành công!");
                 $scope.currentVoucherId = null; // Reset sau khi xóa thành công
             })
-            .catch(function(error) {
+            .catch(function (error) {
                 console.error("Lỗi khi xóa voucher:", error);
                 toastr.error("Lỗi khi xóa voucher: " + (error.data && error.data.message ? error.data.message : "Undefined error"));
             })
@@ -276,7 +276,7 @@ app.controller('VouchersController', function ($scope, $http, $interval, $timeou
 
     // Hàm xử lý lỗi chung
     function handleError(errorMessage) {
-        return function(error) {
+        return function (error) {
             console.error(errorMessage + ":", error);
             toastr.error(errorMessage + "!");
         };
