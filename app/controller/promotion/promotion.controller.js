@@ -1,208 +1,228 @@
-app.controller('PromotionsController', function($scope, $http, $interval) {
-    
-    // URL API để tương tác với backend
+// Định nghĩa controller PromotionsController
+app.controller('PromotionsController', function ($scope, $http, $interval) {
+    // Khai báo các biến và hằng số
     const API_URL = "http://localhost:8080/api/admin/promotions";
-    
-    // Khởi tạo các biến và đối tượng trong scope
-    $scope.promotions = [];          // Mảng chứa danh sách Promotion
-    $scope.searchParams = {};      // Đối tượng chứa các tham số tìm kiếm
-    $scope.promotionData = {};       // Đối tượng chứa dữ liệu của Promotion đang được thêm/sửa
-    $scope.isEditing = false;      // Biến đánh dấu trạng thái đang chỉnh sửa hay thêm mới
-    $scope.isLoading = false;      // Biến đánh dấu trạng thái đang tải dữ liệu
-    $scope.isSearching = false;    // Biến đánh dấu trạng thái đang tìm kiếm
-    
-    let currentPromotionId = null;   // Biến lưu ID của Promotion đang được chỉnh sửa
-    let updateInterval;            // Biến lưu interval để cập nhật dữ liệu tự động
+    const PAGE_SIZE = 3;
+    const AUTO_UPDATE_INTERVAL = 3000; // 3 giây
 
-    // Hàm tải dữ liệu ban đầu
-    $scope.loadData = function() {
-        $scope.isLoading = true;
-        $http.get(API_URL)
-            .then(function(response) {
-                $scope.promotions = response.data;
-                startAutoUpdate(); // Bắt đầu cập nhật tự động sau khi tải dữ liệu
-            })
-            .catch(function(error) {
-                console.error("Lỗi khi tải danh sách Promotion:", error);
-                toastr.error("Có lỗi khi lấy danh sách Promotion!");
-            })
-            .finally(function() {
-                $scope.isLoading = false;
-            });
+    // Khởi tạo các biến scope
+    $scope.promotions = [];
+    $scope.searchParams = {};
+    $scope.promotionData = {};
+    $scope.isEditing = false;
+    $scope.isLoading = false;
+    $scope.isSearching = false;
+    $scope.currentPage = 0;
+    $scope.totalItems = 0;
+    $scope.totalPages = 0;
+
+    // Biến local
+    let currentPromotionId = null;
+    let updateInterval;
+
+    // Cấu hình cho thông báo toastr
+    toastr.options = {
+        "preventDuplicates": true,
+        "closeButton": true,
+        "progressBar": true,
     };
 
-    // Hàm bắt đầu cập nhật tự động
-    function startAutoUpdate() {
-        // Hủy interval cũ nếu có
-        if (updateInterval) {
-            $interval.cancel(updateInterval);
+    // Hàm tải dữ liệu khuyến mãi
+    $scope.loadData = function (page, isAutoUpdate = false) {
+        if (!isAutoUpdate) {
+            $scope.isLoading = true;
         }
-        // Tạo interval mới để cập nhật dữ liệu mỗi giây
-        updateInterval = $interval(function() {
-            // Chỉ cập nhật khi không đang tải dữ liệu và không đang tìm kiếm
-            if (!$scope.isLoading && !$scope.isSearching) {
-                $http.get(API_URL)
-                    .then(function(response) {
-                        $scope.promotions = response.data;
-                    })
-                    .catch(function(error) {
-                        console.error("Lỗi khi cập nhật danh sách Promotion:", error);
-                    });
-            }
-        }, 1000);
-    }
+        $http.get(API_URL, {
+            params: { page: page, size: PAGE_SIZE }
+        }).then(function (response) {
+            updateScope(response.data);
+        }).catch(handleError("Lỗi khi tải danh sách khuyến mãi"))
+          .finally(() => {
+              if (!isAutoUpdate) {
+                  $scope.isLoading = false;
+              }
+          });
+    };
 
-     // Hàm tìm kiếm Promotion
-     $scope.searchPromotions = function() {
+    // Hàm tìm kiếm khuyến mãi
+    $scope.searchPromotions = function (page) {
         $scope.isLoading = true;
         $scope.isSearching = true;
-        // Hủy cập nhật tự động khi đang tìm kiếm
-        if (updateInterval) {
-            $interval.cancel(updateInterval);
-        }
-        $http.get(API_URL + "/search", { params: $scope.searchParams })
-            .then(function(response) {
-                $scope.promotions = response.data;
+        stopAutoUpdate();
+
+        let params = { ...$scope.searchParams, page: page, size: PAGE_SIZE };
+        $http.get(`${API_URL}/search`, { params: params })
+            .then(function (response) {
+                updateScope(response.data);
             })
-            .catch(function(error) {
-                console.error("Lỗi khi tìm kiếm Promotion:", error);
-                toastr.error("Có lỗi khi tìm kiếm Promotion!");
-            })
-            .finally(function() {
-                $scope.isLoading = false;
-            });
+            .catch(handleError("Lỗi khi tìm kiếm khuyến mãi"))
+            .finally(() => $scope.isLoading = false);
     };
 
-    // Hàm đặt lại biểu mẫu tìm kiếm
-    $scope.resetForm = function() {
+    // Hàm đặt lại form tìm kiếm
+    $scope.resetForm = function () {
         $scope.searchParams = {};
         $scope.isSearching = false;
-        $scope.loadData(); // Tải lại dữ liệu và bắt đầu cập nhật tự động
+        $scope.loadData(0);
+        startAutoUpdate();
     };
 
-    // Hàm mở modal thêm mới Promotion
-    $scope.openAddModal = function() {
-        $scope.isEditing = false;
-        $scope.promotionData = {};
-        $('#PromotionModal').modal('show');
+    // Hàm chuyển trang
+    $scope.changePage = function (page) {
+        if ($scope.isSearching) {
+            $scope.searchPromotions(page);
+        } else {
+            $scope.loadData(page);
+        }
     };
 
-    // Hàm chỉnh sửa Promotion
-    $scope.editPromotion = function(id) {
+    // Hàm chỉnh sửa khuyến mãi
+    $scope.editPromotion = function (id) {
         $scope.isEditing = true;
         $scope.isLoading = true;
-        $http.get(API_URL + "/" + id)
-            .then(function(response) {
-                $scope.promotionData = response.data;
-                // Chuyển đổi chuỗi ngày thành đối tượng Date
-                $scope.promotionData.startDate = new Date($scope.promotionData.startDate);
-                $scope.promotionData.endDate = new Date($scope.promotionData.endDate);
+        stopAutoUpdate();
+        $http.get(`${API_URL}/${id}`)
+            .then(function (response) {
+                $scope.promotionData = {
+                    ...response.data,
+                    startDate: new Date(response.data.startDate),
+                    endDate: new Date(response.data.endDate)
+                };
                 currentPromotionId = id;
                 $('#PromotionModal').modal('show');
             })
-            .catch(function(error) {
-                console.error("Lỗi khi lấy thông tin Promotion:", error);
-                toastr.error("Có lỗi khi lấy thông tin Promotion!");
-            })
-            .finally(function() {
-                $scope.isLoading = false;
-            });
+            .catch(handleError("Lỗi khi lấy thông tin khuyến mãi"))
+            .finally(() => $scope.isLoading = false);
     };
 
-    // Hàm lưu Promotion (thêm mới hoặc cập nhật)
-    $scope.savePromotion = function() {
+    // Hàm lưu khuyến mãi (thêm mới hoặc cập nhật)
+    $scope.savePromotion = function () {
         $scope.isLoading = true;
-        let url = API_URL;
-        let method = 'POST';
-        let dataToSend = { ...$scope.promotionData };
+        let url = $scope.isEditing ? `${API_URL}/update/${currentPromotionId}` : API_URL;
+        let method = $scope.isEditing ? 'PUT' : 'POST';
+        let dataToSend = preparePromotionData();
 
-        if ($scope.isEditing) {
-            url += "/update/" + currentPromotionId;
-            method = 'PUT';
-        } else {
-            // Khi thêm mới, không gửi trường status
-            delete dataToSend.status;
-        }
-        // Chuyển đổi ngày giờ sang định dạng ISO 8601
-        if (dataToSend.startDate) {
-            dataToSend.startDate = new Date(dataToSend.startDate).toISOString();
-        }
-        if (dataToSend.endDate) {
-            dataToSend.endDate = new Date(dataToSend.endDate).toISOString();
-        }
         $http({
             method: method,
             url: url,
             data: dataToSend
-        }).then(function(response) {
+        }).then(function (response) {
             $('#PromotionModal').modal('hide');
-            $scope.loadData();
-            toastr.success("Lưu Promotion thành công!");
-        }).catch(function(error) {
-            console.error("Lỗi khi lưu Promotion:", error);
-            toastr.error("Có lỗi khi lưu Promotion!");
-        }).finally(function() {
-            $scope.isLoading = false;
-        });
+            $scope.loadData($scope.currentPage);
+            toastr.success("Lưu khuyến mãi thành công!");
+            startAutoUpdate();
+        }).catch(handleError("Lỗi khi lưu khuyến mãi"))
+          .finally(() => $scope.isLoading = false);
     };
 
-
     // Hàm mở modal xác nhận xóa
-    $scope.openDeleteConfirmModal = function(id) {
+    $scope.openDeleteConfirmModal = function (id) {
         currentPromotionId = id;
+        stopAutoUpdate();
         $('#deleteConfirmModal').modal('show');
     };
 
-    // Hàm xóa Promotion
-    $scope.deletePromotion = function() {
+    // Hàm xóa khuyến mãi
+    $scope.deletePromotion = function () {
         $scope.isLoading = true;
-        $http.delete(API_URL + "/delete/" + currentPromotionId)
-            .then(function(response) {
+        $http.delete(`${API_URL}/delete/${currentPromotionId}`)
+            .then(function (response) {
                 $('#deleteConfirmModal').modal('hide');
-                $scope.loadData();
-                toastr.success("Xóa Promotion thành công!");
+                $scope.loadData($scope.currentPage);
+                toastr.success("Xóa khuyến mãi thành công!");
+                startAutoUpdate();
             })
-            .catch(function(error) {
-                console.error("Lỗi khi xóa Promotion:", error);
-                toastr.error("Có lỗi khi xóa Promotion!");
-            })
-            .finally(function() {
-                $scope.isLoading = false;
-            });
+            .catch(handleError("Lỗi khi xóa khuyến mãi"))
+            .finally(() => $scope.isLoading = false);
     };
 
+    // Hàm mở modal thêm mới khuyến mãi
+    $scope.openAddModal = function() {
+        $scope.isEditing = false;
+        $scope.promotionData = {};
+        stopAutoUpdate();
+        $('#PromotionModal').modal('show');
+    };
 
-    // Hàm hỗ trợ: Hiển thị trạng thái Promotion
-    $scope.getStatusDisplay = function(status) {
-        switch (status) {
-            case 0: return "Đã hết";
-            case 1: return "Hoạt động";
-            case 2: return "Không hoạt động";
-            case 3: return "Chờ hoạt động";
-            case 4: return "Đã kết thúc";
-            default: return "Không xác định";
-        }
+    // Hàm hỗ trợ: Hiển thị trạng thái khuyến mãi
+    $scope.getStatusDisplay = function (status) {
+        const statusMap = {
+            1: "Hoạt động",
+            2: "Không hoạt động",
+            3: "Chờ hoạt động",
+            4: "Đã kết thúc"
+        };
+        return statusMap[status] || "Không xác định";
     };
 
     // Hàm hỗ trợ: Lấy class cho badge trạng thái
-    $scope.getStatusBadgeClass = function(status) {
-        switch (status) {
-            case 0: return "badge-secondary";
-            case 1: return "badge-success";
-            case 2: return "badge-info";
-            case 3: return "badge-warning";
-            case 4: return "badge-danger"
-            default: return "badge-warning";
-        }
+    $scope.getStatusBadgeClass = function (status) {
+        const classMap = {
+            1: "badge-success",
+            2: "badge-info",
+            3: "badge-warning",
+            4: "badge-danger"
+        };
+        return classMap[status] || "badge-secondary";
     };
 
-    // Khởi tạo: Tải dữ liệu ban đầu
-    $scope.loadData();
+    // Hàm tạo mảng số trang để hiển thị
+    $scope.getPageRange = function() {
+        let start = Math.max(1, $scope.currentPage - 1);
+        let end = Math.min($scope.totalPages - 2, $scope.currentPage + 1);
+        return Array.from({length: end - start + 1}, (_, i) => start + i);
+    };
 
-    // Hủy interval khi controller bị hủy
-    $scope.$on('$destroy', function() {
+    // Hàm cập nhật dữ liệu scope từ response
+    function updateScope(data) {
+        $scope.promotions = data.promotions;
+        $scope.currentPage = data.currentPage;
+        $scope.totalItems = data.totalItems;
+        $scope.totalPages = data.totalPages;
+    }
+
+    // Hàm xử lý lỗi chung
+    function handleError(message) {
+        return function(error) {
+            console.error(message, error);
+            toastr.error(message);
+        };
+    }
+
+    // Hàm chuẩn bị dữ liệu khuyến mãi để gửi lên server
+    function preparePromotionData() {
+        let dataToSend = { ...$scope.promotionData };
+        if (!$scope.isEditing) {
+            delete dataToSend.status;
+        }
+        if (dataToSend.startDate) {
+            dataToSend.startDate = dataToSend.startDate.toISOString();
+        }
+        if (dataToSend.endDate) {
+            dataToSend.endDate = dataToSend.endDate.toISOString();
+        }
+        return dataToSend;
+    }
+
+    // Hàm bắt đầu tự động cập nhật
+    function startAutoUpdate() {
+        stopAutoUpdate(); // Đảm bảo không có interval đang chạy
+        updateInterval = $interval(function() {
+            $scope.loadData($scope.currentPage, true);
+        }, AUTO_UPDATE_INTERVAL);
+    }
+
+    // Hàm dừng tự động cập nhật
+    function stopAutoUpdate() {
         if (updateInterval) {
             $interval.cancel(updateInterval);
         }
-    });
+    }
+
+    // Khởi tạo: Tải dữ liệu ban đầu và bắt đầu tự động cập nhật
+    $scope.loadData(0);
+    startAutoUpdate();
+
+    // Hủy interval khi controller bị hủy
+    $scope.$on('$destroy', stopAutoUpdate);
 });

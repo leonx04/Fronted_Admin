@@ -13,16 +13,17 @@
             </div>
             <div class="card-body">
                 <form ng-submit="searchVouchers()">
-                    <div class="form-row">
-                        <div class="form-group col-md-3">
+                    <!-- Row 1 -->
+                    <div class="row">
+                        <div class="form-group col-sm-6 col-md-3">
                             <input type="text" class="form-control" ng-model="searchParams.code"
                                 placeholder="Mã voucher">
                         </div>
-                        <div class="form-group col-md-3">
+                        <div class="form-group col-sm-6 col-md-3">
                             <input type="text" class="form-control" ng-model="searchParams.description"
                                 placeholder="Mô tả">
                         </div>
-                        <div class="form-group col-md-3">
+                        <div class="form-group col-sm-6 col-md-3">
                             <select class="form-control" ng-model="searchParams.status">
                                 <option value="">Tất cả trạng thái</option>
                                 <option value="1">Hoạt động</option>
@@ -31,7 +32,7 @@
                                 <option value="0">Đã hết</option>
                             </select>
                         </div>
-                        <div class="form-group col-md-3">
+                        <div class="form-group col-sm-6 col-md-3">
                             <select class="form-control" ng-model="searchParams.voucherType">
                                 <option value="">Tất cả loại</option>
                                 <option value="percentage">Phần trăm</option>
@@ -40,33 +41,37 @@
                             </select>
                         </div>
                     </div>
-                    <div class="form-row">
-                        <div class="form-group col-md-3">
+                    <!-- Row 2 -->
+                    <div class="row">
+                        <div class="form-group col-sm-6 col-md-3">
                             <input type="datetime-local" class="form-control" ng-model="searchParams.startDate"
                                 placeholder="Ngày bắt đầu">
                         </div>
-                        <div class="form-group col-md-3">
+                        <div class="form-group col-sm-6 col-md-3">
                             <input type="datetime-local" class="form-control" ng-model="searchParams.endDate"
                                 placeholder="Ngày kết thúc">
                         </div>
-                        <div class="form-group col-md-3">
+                        <div class="form-group col-sm-6 col-md-3">
                             <input type="number" class="form-control" ng-model="searchParams.minimumDiscountValue"
                                 placeholder="Giá trị giảm tối thiểu" min="0">
                         </div>
-                        <div class="form-group col-md-3">
+                        <div class="form-group col-sm-6 col-md-3">
                             <input type="number" class="form-control" ng-model="searchParams.minimumOrderValue"
                                 placeholder="Giá trị đơn hàng tối thiểu" min="0">
                         </div>
                     </div>
-                    <div class="form-row">
-                        <div class="col-12">
-                            <button type="submit" class="btn btn-primary">
-                                <i class="fas fa-search"></i> Tìm kiếm
-                            </button>
-                            <button type="button" class="btn btn-secondary" ng-click="resetForm()">
-                                <i class="fas fa-undo"></i> Đặt lại
-                            </button>
-                            <button type="button" class="btn btn-success float-right" ng-click="openAddModal()">
+                    <!-- Row 3 (Buttons) -->
+                    <div class="row">
+                        <div class="col-12 d-flex flex-wrap justify-content-between">
+                            <div>
+                                <button type="submit" class="btn btn-primary mb-2">
+                                    <i class="fas fa-search"></i> Tìm kiếm
+                                </button>
+                                <button type="button" class="btn btn-secondary mb-2" ng-click="resetForm()">
+                                    <i class="fas fa-undo"></i> Đặt lại
+                                </button>
+                            </div>
+                            <button type="button" class="btn btn-success mb-2" ng-click="openAddModal()">
                                 <i class="fas fa-plus"></i> Thêm mới
                             </button>
                         </div>
@@ -74,6 +79,7 @@
                 </form>
             </div>
         </div>
+
 
         <!-- Vouchers List Card -->
         <div class="card shadow mb-4">
@@ -110,7 +116,8 @@
                                     <button class="btn btn-sm btn-info" ng-click="viewVoucher(voucher.id)">
                                         <i class="fas fa-eye"></i>
                                     </button>
-                                    <button class="btn btn-primary btn-sm" ng-click="editVoucher(voucher.id)" ng-if="voucher.status !== 2">
+                                    <button class="btn btn-primary btn-sm" ng-click="openEditModal(voucher.id)"
+                                        ng-if="voucher.status !== 2">
                                         <i class="fas fa-edit"></i>
                                     </button>
                                     <button class="btn btn-sm btn-danger" ng-click="openDeleteConfirmModal(voucher.id)">
@@ -121,141 +128,166 @@
                         </tbody>
                     </table>
                 </div>
-            </div>
-        </div>
-    </div>
-
-    <!-- Voucher Modal -->
-    <div class="modal fade" id="voucherModal" tabindex="-1" role="dialog" aria-labelledby="voucherModalLabel"
-        aria-hidden="true">
-        <div class="modal-dialog" role="document">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <h5 class="modal-title" id="voucherModalLabel">{{isEditing ? 'Chỉnh Sửa' : 'Thêm'}} Voucher</h5>
-                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                        <span aria-hidden="true">&times;</span>
-                    </button>
-                </div>
-                <div class="modal-body">
-                    <form>
-                        <div class="form-row">
-                            <div class="form-group col-md-6">
-                                <label for="code">Mã Voucher</label>
-                                <input type="text" class="form-control" id="code" ng-model="voucherData.code" required>
-                            </div>
-                            <div class="form-group col-md-6">
-                                <label for="description">Mô tả</label>
-                                <input type="text" class="form-control" id="description"
-                                    ng-model="voucherData.description">
-                            </div>
-                        </div>
-                        <div class="form-row">
-                            <div class="form-group col-md-6">
-                                <label for="startDate">Ngày bắt đầu</label>
-                                <input type="datetime-local" class="form-control" id="startDate" step="1"
-                                    ng-model="voucherData.startDate" required>
-                            </div>
-                            <div class="form-group col-md-6">
-                                <label for="endDate">Ngày kết thúc</label>
-                                <input type="datetime-local" class="form-control" id="endDate" step="1"
-                                    ng-model="voucherData.endDate" required>
-                            </div>
-                        </div>
-                        <div class="form-row">
-                            <div class="form-group col-md-6">
-                                <label for="discountValue">Giá trị giảm giá</label>
-                                <input type="number" class="form-control" id="discountValue"
-                                    ng-model="voucherData.discountValue" required>
-                            </div>
-                            <div class="form-group col-md-6">
-                                <label for="minimumOrderValue">Giá trị đơn hàng tối thiểu</label>
-                                <input type="number" class="form-control" id="minimumOrderValue"
-                                    ng-model="voucherData.minimumOrderValue">
-                            </div>
-                        </div>
-                        <div class="form-row">
-                            <div class="form-group col-md-6">
-                                <label for="voucherType">Loại Voucher</label>
-                                <select class="form-control" id="voucherType" ng-model="voucherData.voucherType"
-                                    required>
-                                    <option value="">-Chọn loại voucher-</option>
-                                    <option value="percentage">Phần trăm</option>
-                                    <option value="fixed">Cố định</option>
-                                    <option value="freeship">Miễn phí giao hàng</option>
-                                </select>
-                            </div>
-                            <div class="form-group col-md-6" ng-if="isEditing">
-                                <label for="status">Trạng thái</label>
-                                <select class="form-control" id="status" ng-model="voucherData.status">
-                                    <option value="1">Hoạt động</option>
-                                    <option value="3">Chờ hoạt động</option>
-                                    <option value="2">Không hoạt động</option>
-                                    <option value="4">Đã kết thúc</option>
-                                    <option value="0">Đã hết</option>
-                                </select>
-                            </div>
-                        </div>
-                        <div class="form-row">
-                            <div class="form-group col-md-6">
-                                <label for="maximumDiscountAmount">Số tiền giảm tối đa</label>
-                                <input type="number" class="form-control" id="maximumDiscountAmount"
-                                    ng-model="voucherData.maximumDiscountAmount">
-                            </div>
-                            <div class="form-group col-md-6">
-                                <label for="quantity">Số lượng</label>
-                                <input type="number" class="form-control" id="quantity" ng-model="voucherData.quantity"
-                                    required>
-                            </div>
-                        </div>
-                    </form>
-                </div>
-                <div class="modal-footer">
-                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Đóng</button>
-                    <button type="button" class="btn btn-primary" ng-click="saveVoucher()">Lưu</button>
+                <div class="d-flex justify-content-between align-items-center mt-3">
+                    <p class="mb-0">
+                        Showing {{currentPage * pageSize + 1}} to {{Math.min((currentPage + 1) * pageSize, totalItems)}}
+                        of {{totalItems}} entries
+                    </p>
+                    <nav aria-label="Page navigation" class="pagination-sm">
+                        <ul class="pagination mb-0">
+                            <li class="page-item" ng-class="{'disabled': currentPage === 0}">
+                                <a class="page-link" href ng-click="changePage(currentPage - 1)" aria-label="Previous">
+                                    <span aria-hidden="true">&laquo;</span>
+                                </a>
+                            </li>
+                            <li class="page-item" ng-class="{'active': currentPage === 0}" ng-if="totalPages > 0">
+                                <a class="page-link" href ng-click="changePage(0)">1</a>
+                            </li>
+                            <li class="page-item disabled" ng-if="currentPage > 2">
+                                <span class="page-link">...</span>
+                            </li>
+                            <li class="page-item" ng-class="{'active': currentPage === page}"
+                                ng-repeat="page in getPageRange()" ng-if="page !== 0 && page !== totalPages - 1">
+                                <a class="page-link" href ng-click="changePage(page)">{{page + 1}}</a>
+                            </li>
+                            <li class="page-item disabled" ng-if="currentPage < totalPages - 3">
+                                <span class="page-link">...</span>
+                            </li>
+                            <li class="page-item" ng-class="{'active': currentPage === totalPages - 1}"
+                                ng-if="totalPages > 1">
+                                <a class="page-link" href ng-click="changePage(totalPages - 1)">{{totalPages}}</a>
+                            </li>
+                            <li class="page-item" ng-class="{'disabled': currentPage === totalPages - 1}">
+                                <a class="page-link" href ng-click="changePage(currentPage + 1)" aria-label="Next">
+                                    <span aria-hidden="true">&raquo;</span>
+                                </a>
+                            </li>
+                        </ul>
+                    </nav>
                 </div>
             </div>
         </div>
     </div>
+</div>
 
-    <!-- View Voucher Modal -->
-    <div class="modal fade" id="viewVoucherModal" tabindex="-1" role="dialog" aria-labelledby="viewVoucherModalLabel"
-        aria-hidden="true">
-        <div class="modal-dialog modal-lg" role="document">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <h5 class="modal-title" id="viewVoucherModalLabel">Chi Tiết Voucher</h5>
-                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                        <span aria-hidden="true">&times;</span>
-                    </button>
-                </div>
-                <div class="modal-body" id="viewVoucherBody">
-                    <!-- Content will be dynamically inserted here -->
-                </div>
-                <div class="modal-footer">
-                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Đóng</button>
-                </div>
+<!-- Add Voucher Modal -->
+<div id="voucherModal" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="voucherModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg" role="document">
+      <div class="modal-content">
+        <div class="modal-header bg-primary text-white">
+            <h5 class="modal-title" id="voucherModalLabel">{{isEditing ? 'Chỉnh Sửa' : 'Thêm'}} Voucher</h5>
+          <button type="button" class="close text-white" data-dismiss="modal" aria-label="Close">
+            <span aria-hidden="true">&times;</span>
+          </button>
+        </div>
+        <div class="modal-body">
+          <form name="voucherForm">
+            <div class="form-row">
+              <div class="form-group col-md-6">
+                <label for="code">Mã Voucher</label>
+                <input type="text" class="form-control" id="code" ng-model="voucherData.code" required>
+              </div>
+              <div class="form-group col-md-6">
+                <label for="description">Mô tả</label>
+                <input type="text" class="form-control" id="description" ng-model="voucherData.description">
+              </div>
+            </div>
+            <div class="form-row">
+              <div class="form-group col-md-6">
+                <label for="startDate">Ngày bắt đầu</label>
+                <input type="datetime-local" class="form-control" id="startDate" ng-model="voucherData.startDate">
+
+              </div>
+              <div class="form-group col-md-6">
+                <label for="endDate">Ngày kết thúc</label>
+                <input type="datetime-local" class="form-control" id="endDate" ng-model="voucherData.endDate" required>
+              </div>
+            </div>
+            <div class="form-row">
+              <div class="form-group col-md-6">
+                <label for="discountValue">Giá trị giảm giá</label>
+                <input type="number" class="form-control" id="discountValue" ng-model="voucherData.discountValue" required>
+              </div>
+              <div class="form-group col-md-6">
+                <label for="minimumOrderValue">Giá trị đơn hàng tối thiểu</label>
+                <input type="number" class="form-control" id="minimumOrderValue" ng-model="voucherData.minimumOrderValue">
+              </div>
+            </div>
+            <div class="form-row">
+              <div class="form-group col-md-6">
+                <label for="voucherType">Loại Voucher</label>
+                <select class="form-control" id="voucherType" ng-model="voucherData.voucherType" required>
+                  <option value="percentage">Phần trăm</option>
+                  <option value="fixed">Cố định</option>
+                  <option value="freeship">Miễn phí giao hàng</option>
+                </select>
+              </div>
+              <div class="form-group col-md-6">
+                <label for="maximumDiscountAmount">Số tiền giảm tối đa</label>
+                <input type="number" class="form-control" id="maximumDiscountAmount" ng-model="voucherData.maximumDiscountAmount">
+              </div>
+            </div>
+            <div class="form-group">
+              <label for="quantity">Số lượng</label>
+              <input type="number" class="form-control" id="quantity" ng-model="voucherData.quantity" required>
+            </div>
+            <div class="form-group" ng-if="isEditing">
+              <label for="status">Trạng thái</label>
+              <select class="form-control" id="status" ng-model="voucherData.status">
+                <option value="0">Đã hết</option>
+                <option value="1">Hoạt động</option>
+                <option value="2">Không hoạt động</option>
+                <option value="3">Chờ hoạt động</option>
+                <option value="4">Đã kết thúc</option>
+              </select>
+            </div>
+          </form>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" data-dismiss="modal">Đóng</button>
+          <button type="button" class="btn btn-primary" ng-click="saveVoucher()" ng-disabled="voucherForm.$invalid">{{isEditing ? 'Cập Nhật' : 'Lưu'}}</button>
+        </div>
+      </div>
+    </div>
+  </div>
+<!-- View Voucher Modal -->
+<div class="modal fade" id="viewVoucherModal" tabindex="-1" role="dialog" aria-labelledby="viewVoucherModalLabel"
+    aria-hidden="true">
+    <div class="modal-dialog modal-lg" role="document">
+        <div class="modal-content">
+            <div class="modal-header bg-primary text-white">
+                <h5 class="modal-title" id="viewVoucherModalLabel">Chi Tiết Voucher</h5>
+                <button type="button" class="close text-white" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body" id="viewVoucherBody">
+                <!-- Content will be dynamically inserted here -->
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-dismiss="modal">Đóng</button>
             </div>
         </div>
     </div>
+</div>
 
-    <!-- Delete Confirm Modal -->
-    <div class="modal fade" id="deleteConfirmModal" tabindex="-1" role="dialog"
-        aria-labelledby="deleteConfirmModalLabel" aria-hidden="true">
-        <div class="modal-dialog" role="document">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <h5 class="modal-title" id="deleteConfirmModalLabel">Xác nhận xóa</h5>
-                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                        <span aria-hidden="true">&times;</span>
-                    </button>
-                </div>
-                <div class="modal-body">
-                    Bạn có chắc chắn muốn xóa voucher này?
-                </div>
-                <div class="modal-footer">
-                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Hủy</button>
-                    <button type="button" class="btn btn-danger" ng-click="deleteVoucher()">Xóa</button>
-                </div>
+<!-- Delete Confirm Modal -->
+<div class="modal fade" id="deleteConfirmModal" tabindex="-1" role="dialog" aria-labelledby="deleteConfirmModalLabel"
+    aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="deleteConfirmModalLabel">Xác nhận xóa</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                Bạn có chắc chắn muốn xóa voucher này?
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-dismiss="modal">Hủy</button>
+                <button type="button" class="btn btn-danger" ng-click="deleteVoucher()">Xóa</button>
             </div>
         </div>
     </div>

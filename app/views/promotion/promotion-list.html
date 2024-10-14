@@ -16,43 +16,49 @@
             </div>
             <div class="card-body">
                 <form ng-submit="searchPromotions()">
-                    <div class="form-row">
-                        <div class="form-group col-md-3">
+                    <!-- Row 1 -->
+                    <div class="row">
+                        <div class="form-group col-sm-6 col-md-3">
                             <label for="searchCode">Mã khuyến mãi</label>
                             <input type="text" class="form-control" id="searchCode" ng-model="searchParams.code"
                                 placeholder="Nhập mã khuyến mãi">
                         </div>
-                        <div class="form-group col-md-3">
+                        <div class="form-group col-sm-6 col-md-3">
                             <label for="searchName">Tên khuyến mãi</label>
                             <input type="text" class="form-control" id="searchName" ng-model="searchParams.name"
                                 placeholder="Nhập tên khuyến mãi">
                         </div>
-                        <div class="form-group col-md-3">
+                        <div class="form-group col-sm-6 col-md-3">
                             <label for="searchStartDate">Ngày bắt đầu</label>
                             <input type="datetime-local" class="form-control" id="searchStartDate"
                                 ng-model="searchParams.startDate">
                         </div>
-                        <div class="form-group col-md-3">
+                        <div class="form-group col-sm-6 col-md-3">
                             <label for="searchEndDate">Ngày kết thúc</label>
                             <input type="datetime-local" class="form-control" id="searchEndDate"
                                 ng-model="searchParams.endDate">
                         </div>
                     </div>
-                    <div class="form-row">
-                        <div class="col-md-6">
-                            <button type="submit" class="btn btn-primary"><i class="fas fa-search mr-2"></i>Tìm
-                                kiếm</button>
-                            <button type="button" class="btn btn-secondary ml-2" ng-click="resetForm()"><i
-                                    class="fas fa-undo mr-2"></i>Đặt lại</button>
-                        </div>
-                        <div class="col-md-6 text-right">
-                            <button type="button" class="btn btn-success" ng-click="openAddModal()"><i
-                                    class="fas fa-plus mr-2"></i>Thêm khuyến mãi</button>
+                    <!-- Row 2 (Buttons) -->
+                    <div class="row">
+                        <div class="col-12 d-flex flex-wrap justify-content-between">
+                            <div>
+                                <button type="submit" class="btn btn-primary mb-2">
+                                    <i class="fas fa-search mr-2"></i>Tìm kiếm
+                                </button>
+                                <button type="button" class="btn btn-secondary ml-2 mb-2" ng-click="resetForm()">
+                                    <i class="fas fa-undo mr-2"></i>Đặt lại
+                                </button>
+                            </div>
+                            <button type="button" class="btn btn-success mb-2" ng-click="openAddModal()">
+                                <i class="fas fa-plus mr-2"></i>Thêm khuyến mãi
+                            </button>
                         </div>
                     </div>
                 </form>
             </div>
         </div>
+
 
         <!-- Promotions List -->
         <div class="card shadow mb-4">
@@ -95,6 +101,43 @@
                             </tr>
                         </tbody>
                     </table>
+                </div>
+                <div class="d-flex justify-content-between align-items-center mt-3">
+                    <p class="mb-0">
+                        Showing {{currentPage * pageSize + 1}} to {{Math.min((currentPage + 1) * pageSize, totalItems)}}
+                        of {{totalItems}} entries
+                    </p>
+                    <nav aria-label="Page navigation" class="pagination-sm">
+                        <ul class="pagination mb-0">
+                            <li class="page-item" ng-class="{'disabled': currentPage === 0}">
+                                <a class="page-link" href ng-click="changePage(currentPage - 1)" aria-label="Previous">
+                                    <span aria-hidden="true">&laquo;</span>
+                                </a>
+                            </li>
+                            <li class="page-item" ng-class="{'active': currentPage === 0}" ng-if="totalPages > 0">
+                                <a class="page-link" href ng-click="changePage(0)">1</a>
+                            </li>
+                            <li class="page-item disabled" ng-if="currentPage > 2">
+                                <span class="page-link">...</span>
+                            </li>
+                            <li class="page-item" ng-class="{'active': currentPage === page}"
+                                ng-repeat="page in getPageRange()" ng-if="page !== 0 && page !== totalPages - 1">
+                                <a class="page-link" href ng-click="changePage(page)">{{page + 1}}</a>
+                            </li>
+                            <li class="page-item disabled" ng-if="currentPage < totalPages - 3">
+                                <span class="page-link">...</span>
+                            </li>
+                            <li class="page-item" ng-class="{'active': currentPage === totalPages - 1}"
+                                ng-if="totalPages > 1">
+                                <a class="page-link" href ng-click="changePage(totalPages - 1)">{{totalPages}}</a>
+                            </li>
+                            <li class="page-item" ng-class="{'disabled': currentPage === totalPages - 1}">
+                                <a class="page-link" href ng-click="changePage(currentPage + 1)" aria-label="Next">
+                                    <span aria-hidden="true">&raquo;</span>
+                                </a>
+                            </li>
+                        </ul>
+                    </nav>
                 </div>
             </div>
         </div>
@@ -148,10 +191,9 @@
                                 <label for="status">Trạng thái</label>
                                 <select class="form-control" id="status" ng-model="promotionData.status">
                                     <option value="1">Hoạt động</option>
-                                    <option value="3">Chờ hoạt động</option>
+                                    <!-- <option value="3">Chờ hoạt động</option> -->
                                     <option value="2">Không hoạt động</option>
-                                    <option value="4">Hết hạn</option>
-                                    <option value="0">Đã hết</option>
+                                    <!-- <option value="4">Hết hạn</option> -->
                                 </select>
                             </div>
                         </div>
