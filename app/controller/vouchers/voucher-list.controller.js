@@ -188,20 +188,35 @@ app.controller('VouchersController', function ($scope, $http, $interval, $timeou
 
     // Hàm mở modal xác nhận xóa
     $scope.openDeleteConfirmModal = function (id) {
-        currentVoucherId = id;
-        $('#deleteConfirmModal').modal('show');
+        if (id) {
+            $scope.currentVoucherId = id; // Thay đổi tên biến này
+            console.log("Opening delete modal for voucher ID:", $scope.currentVoucherId);
+            $('#deleteConfirmModal').modal('show');
+        } else {
+            toastr.error("Không thể xóa voucher. ID không hợp lệ!");
+        }
     };
 
-    // Hàm xóa voucher
+    // Update this function
     $scope.deleteVoucher = function () {
         $scope.isLoading = true;
-        $http.delete(API_URL + "/delete/" + currentVoucherId)
+        console.log("Deleting voucher with ID:", $scope.currentVoucherId);
+        if (!$scope.currentVoucherId) {
+            toastr.error("Không thể xóa voucher. ID không hợp lệ!");
+            $scope.isLoading = false;
+            return;
+        }
+        $http.delete(`${API_URL}/delete/${$scope.currentVoucherId}`)
             .then(function (response) {
                 $('#deleteConfirmModal').modal('hide');
                 $scope.loadData($scope.currentPage);
                 toastr.success("Xóa voucher thành công!");
+                $scope.currentVoucherId = null; // Reset sau khi xóa thành công
             })
-            .catch(handleError("Lỗi khi xóa voucher"))
+            .catch(function(error) {
+                console.error("Lỗi khi xóa voucher:", error);
+                toastr.error("Lỗi khi xóa voucher: " + (error.data && error.data.message ? error.data.message : "Undefined error"));
+            })
             .finally(() => $scope.isLoading = false);
     };
 
