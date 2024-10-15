@@ -74,6 +74,10 @@ app.config(function ($routeProvider) {
       templateUrl: 'app/views/exception/404.html',
       controller: '404Controllers'
     })
+    .when('/order-detail/:code', {
+      templateUrl: 'app/views/order/orderdetails.html',
+      controller: 'OrdersListController'
+    })
     .otherwise({
       redirectTo: '/'
     });

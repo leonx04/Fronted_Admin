@@ -1,0 +1,116 @@
+<!DOCTYPE html>
+<html lang="vi" ng-app="360SneakerApp">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Hóa Đơn Chi Tiết</title>
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.1.3/css/bootstrap.min.css"
+    />
+  </head>
+  <body>
+    <div class="container my-5">
+      <div class="d-flex align-items-center mb-4">
+        <div>
+          <button
+            class="fas fa-arrow-left back-arrow me-3"
+            ng-click="goBack()"
+            title="Quay lại danh sách đơn hàng"
+          ></button>
+        </div>
+        <h2 class="mb-0">Chi tiết hóa đơn</h2>
+      </div>
+      <div class="card">
+        <div class="card-body">
+          <div class="text-center mb-4">
+            <img
+              src=""
+              alt="Company logo"
+              class="img-fluid mb-3"
+              style="max-width: 150px"
+            />
+            <h4><strong>Công ty ABC</strong></h4>
+            <div>Địa chỉ: 123 Phố Mẫu</div>
+            <div>Thành phố: Hà Nội</div>
+          </div>
+
+          <div class="row mb-4">
+            <div class="col-md-6">
+              <h5 class="mb-3">Thông tin hóa đơn</h5>
+              <div><strong>Hóa đơn #: 123</strong></div>
+              <div>Ngày tạo: 01/10/2024</div>
+              <div>Thời hạn: 15/10/2024</div>
+            </div>
+            <div class="col-md-6">
+              <h5 class="mb-3">Thông tin khách hàng</h5>
+              <div><strong>Khách hàng: Nguyễn Văn A</strong></div>
+              <div>Địa chỉ: 456 Phố Khách</div>
+              <div>Thành phố: Hà Nội</div>
+            </div>
+          </div>
+
+          <div class="row mb-4">
+            <div class="col-md-6">
+              <h5 class="mb-3">Thanh toán</h5>
+              <div class="mb-2">
+                <strong>Hình thức thanh toán:</strong>
+                <span class="badge bg-primary">Thanh toán online trên web</span>
+                <!-- Hoặc sử dụng: <span class="badge bg-secondary">Thanh toán tại quầy</span> -->
+              </div>
+              <div><strong>Phương thức thanh toán:</strong> Thẻ tín dụng</div>
+              <div>Ngân hàng ABC: 1234 5678 9012 3456</div>
+            </div>
+          </div>
+
+          <div class="table-responsive-sm">
+            <table class="table table-striped">
+              <thead>
+                <tr>
+                  <th>Sản phẩm</th>
+                  <th class="text-center">Số lượng</th>
+                  <th class="text-end">Giá</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td class="align-middle">
+                    <div class="d-flex align-items-center">
+                      <img
+                        src=""
+                        alt="Giày Thể Thao"
+                        class="img-fluid me-3"
+                        style="width: 50px; height: 50px"
+                      />
+                      <div>Giày Thể Thao</div>
+                    </div>
+                  </td>
+                  <td class="text-center align-middle">1</td>
+                  <td class="text-end align-middle">1,500,000 VND</td>
+                </tr>
+                <tr>
+                  <td class="align-middle">Phí Vận Chuyển</td>
+                  <td class="text-center align-middle">-</td>
+                  <td class="text-end align-middle">20,000 VND</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+          <div class="row">
+            <div class="col-lg-4 col-sm-5 ms-auto">
+              <table class="table table-sm table-clear">
+                <tbody>
+                  <tr>
+                    <td class="text-end"><strong>Tổng cộng</strong></td>
+                    <td class="text-end">1,520,000 VND</td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <script src="/app/controller/orders/orders-list.controller.js"></script>
+  </body>
+</html>
