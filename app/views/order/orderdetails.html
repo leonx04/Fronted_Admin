@@ -14,25 +14,28 @@
     />
     <style>
       .text-center {
-  margin-bottom: 20px;
-}
+        margin-bottom: 20px;
+      }
 
-.sidebar-brand-icon {
-  font-size: 3rem;
-  color: #333;
-}
+      .sidebar-brand-icon {
+        font-size: 3rem;
+        color: #333;
+      }
 
-.sidebar-brand-text {
-  font-size: 1.5rem;
-  font-weight: bold;
-  margin-top: 10px;
-  color: #333;
-}
+      .sidebar-brand-text {
+        font-size: 1.5rem;
+        font-weight: bold;
+        margin-top: 10px;
+        color: #333;
+      }
+
       @media (max-width: 768px) {
         .card-body {
           padding: 1rem;
         }
-        h2, h4, h5 {
+        h2,
+        h4,
+        h5 {
           font-size: 1.2rem;
         }
         .table {
@@ -42,6 +45,7 @@
           max-width: 100px;
         }
       }
+
       @media (max-width: 576px) {
         .d-flex.align-items-center {
           flex-direction: column;
@@ -51,97 +55,127 @@
           margin-bottom: 1rem;
         }
       }
+
       .product-image {
         width: 50px;
         height: 50px;
         object-fit: cover;
       }
-      
-      /* Responsive table styles */
+
       .table-responsive-custom {
         overflow-x: auto;
       }
+
       .table-responsive-custom table {
         width: 100%;
-        table-layout: fixed;
       }
-      .table-responsive-custom tr {
+
+      .product-info {
         display: flex;
-        flex-wrap: wrap;
+        align-items: center;
       }
-      .table-responsive-custom th,
-      .table-responsive-custom td {
-        flex: 1;
-        text-align: right;
-        padding: 0.5rem;
+
+      .product-name {
+        margin-left: 10px;
       }
-      .table-responsive-custom th:first-child,
-      .table-responsive-custom td:first-child {
-        flex: 3;
-        text-align: left;
-      }
-      .table-responsive-custom .shipping-fee-row td:first-child,
-      .table-responsive-custom .total-row td:first-child {
-        flex: 3;
-        text-align: left;
-      }
-      .table-responsive-custom .shipping-fee-row td:nth-child(2),
-      .table-responsive-custom .shipping-fee-row td:nth-child(3),
-      .table-responsive-custom .total-row td:nth-child(2),
-      .table-responsive-custom .total-row td:nth-child(3) {
-        flex: 0;
-        padding: 0;
-        width: 0;
-        overflow: hidden;
+
+      @media screen and (min-width: 768px) {
+        .table-responsive-custom tr {
+          display: table-row;
+        }
+
+        .table-responsive-custom th,
+        .table-responsive-custom td {
+          display: table-cell;
+          text-align: left;
+          padding: 0.5rem;
+          vertical-align: middle;
+        }
+
+        .table-responsive-custom th:nth-child(n + 3),
+        .table-responsive-custom td:nth-child(n + 3) {
+          text-align: right;
+        }
+
+        .table-responsive-custom td:first-child {
+          width: 40%;
+        }
+
+        .table-responsive-custom td:nth-child(2) {
+          text-align: center;
+        }
       }
 
       @media screen and (max-width: 767px) {
         .table-responsive-custom thead {
           display: none;
         }
+
         .table-responsive-custom tr {
-          flex-direction: column;
+          display: block;
           margin-bottom: 1rem;
-          border-bottom: 2px solid #dee2e6;
+          border: 1px solid #dee2e6;
+          border-radius: 0.25rem;
+          padding: 0.5rem;
         }
+
         .table-responsive-custom td {
-          flex: 1;
+          display: flex;
+          justify-content: space-between;
           text-align: right;
-          padding-left: 50%;
-          position: relative;
+          padding: 0.25rem 0;
           border: none;
         }
+
         .table-responsive-custom td::before {
           content: attr(data-label);
-          position: absolute;
-          left: 6px;
-          width: 45%;
-          text-align: left;
           font-weight: bold;
-        }
-        .table-responsive-custom td.product-cell {
           text-align: left;
-          padding-left: 6px;
+          padding-right: 0.5rem;
         }
-        .table-responsive-custom td.product-cell::before {
+
+        .table-responsive-custom .product-cell {
+          flex-direction: column;
+          align-items: flex-start;
+        }
+
+        .table-responsive-custom .product-cell::before {
           content: none;
         }
-        .table-responsive-custom .shipping-fee-row td:first-child,
-        .table-responsive-custom .total-row td:first-child {
+
+        .table-responsive-custom .product-info {
+          display: flex;
+          align-items: center;
+          margin-bottom: 0.5rem;
+        }
+
+        .table-responsive-custom .product-image {
+          margin-right: 0.5rem;
+        }
+
+        .table-responsive-custom .shipping-fee-row,
+        .table-responsive-custom .total-row {
+          background-color: #f8f9fa;
+          font-weight: bold;
+        }
+        .table-responsive-custom .shipping-fee-row td,
+        .table-responsive-custom .total-row td {
+          display: flex;
+          justify-content: space-between;
+        }
+
+        .table-responsive-custom .shipping-fee-row td::before,
+        .table-responsive-custom .total-row td::before {
+          content: attr(data-label);
+        }
+
+        .table-responsive-custom .shipping-fee-row td[colspan],
+        .table-responsive-custom .total-row td[colspan] {
           display: none;
         }
-        .table-responsive-custom .shipping-fee-row td:last-child,
-        .table-responsive-custom .total-row td:last-child {
-          text-align: right;
-          padding-left: 50%;
-        }
-        .table-responsive-custom .shipping-fee-row td:last-child::before {
-          content: "Phí Vận Chuyển";
-        }
-        .table-responsive-custom .total-row td:last-child::before {
-          content: "Tổng cộng";
-        }
+        
       }
+
       .total-row {
         font-weight: bold;
         background-color: #f8f9fa;
@@ -165,11 +199,10 @@
       <div class="card">
         <div class="card-body">
           <div class="text-center">
-              <div class="sidebar-brand-icon rotate-n-15">
-                  <i class="fas fa-shoe-prints"></i>
-              </div>
-              <div class="sidebar-brand-text "> 360 Sneaker</div>
-         
+            <div class="sidebar-brand-icon rotate-n-15">
+              <i class="fas fa-shoe-prints"></i>
+            </div>
+            <div class="sidebar-brand-text">360 Sneaker</div>
           </div>
 
           <div class="row mb-4">
@@ -200,79 +233,69 @@
           </div>
 
           <div class="table-responsive-custom">
-            <table class="table table-striped">
+            <table class="table">
               <thead>
                 <tr>
                   <th>Sản phẩm</th>
-                  <th class="text-center">Số lượng</th>
-                  <th class="text-end">Đơn giá</th>
-                  <th class="text-end">Thành tiền</th>
+                  <th>Số lượng</th>
+                  <th>Đơn giá</th>
+                  <th>Thành tiền</th>
                 </tr>
               </thead>
               <tbody>
                 <tr>
                   <td class="product-cell">
                     <div class="product-info">
-                      <!-- <img
-                        src=""
-                  
-                        class="product-image me-3"
-                      /> -->
-                      <div>Giày Thể Thao Nike Air Max</div>
+                      <img src="" class="product-image" />
+                      <span class="product-name"
+                        >Giày Thể Thao Nike Air Max</span
+                      >
                     </div>
                   </td>
-                  <td class="text-center" data-label="Số lượng">2</td>
-                  <td class="text-end" data-label="Đơn giá">1,500,000 VND</td>
-                  <td class="text-end" data-label="Thành tiền">
-                    3,000,000 VND
-                  </td>
+                  <td data-label="Số lượng">2</td>
+                  <td data-label="Đơn giá">1,500,000 VND</td>
+                  <td data-label="Thành tiền">3,000,000 VND</td>
                 </tr>
                 <tr>
                   <td class="product-cell">
                     <div class="product-info">
-                      <!-- <img
-                        src=""
-                    
-                        class="product-image me-3"
-                      /> -->
-                      <div>Áo thun Adidas Originals</div>
+                      <img src="" class="product-image" />
+                      <span class="product-name">Áo thun Adidas Originals</span>
                     </div>
                   </td>
-                  <td class="text-center" data-label="Số lượng">1</td>
-                  <td class="text-end" data-label="Đơn giá">500,000 VND</td>
-                  <td class="text-end" data-label="Thành tiền">500,000 VND</td>
+                  <td data-label="Số lượng">1</td>
+                  <td data-label="Đơn giá">500,000 VND</td>
+                  <td data-label="Thành tiền">500,000 VND</td>
                 </tr>
                 <tr>
                   <td class="product-cell">
                     <div class="product-info">
-                      <!-- <img
-                        src=""
-                      
-                        class="product-image me-3"
-                      /> -->
-                      <div>Quần short Puma Sport</div>
+                      <img src="" class="product-image" />
+                      <span class="product-name">Quần short Puma Sport</span>
                     </div>
                   </td>
-                  <td class="text-center" data-label="Số lượng">1</td>
-                  <td class="text-end" data-label="Đơn giá">400,000 VND</td>
-                  <td class="text-end" data-label="Thành tiền">400,000 VND</td>
-                </tr>
-                <tr class="shipping-fee-row">
-                  <td data-label="Phí Vận Chuyển">Phí Vận Chuyển</td>
-                  <td></td>
-                  <td></td>
-                  <td data-label="Phí Vận Chuyển">50,000 VND</td>
-                </tr>
-                <tr class="total-row">
-                  <td data-label="Tổng cộng">Tổng cộng</td>
-                  <td></td>
-                  <td></td>
-                  <td data-label="Tổng cộng">3,950,000 VND</td>
+                  <td data-label="Số lượng">1</td>
+                  <td data-label="Đơn giá">400,000 VND</td>
+                  <td data-label="Thành tiền">400,000 VND</td>
                 </tr>
               </tbody>
             </table>
           </div>
 
+          <div class="mt-4">
+            <div class="d-flex justify-content-between align-items-center mb-2">
+              <span class="fw-bold">Phí Vận Chuyển</span>
+              <span>50,000 VND</span>
+            </div>
+            <div class="d-flex justify-content-between align-items-center mb-2">
+              <span class="fw-bold">Voucher</span>
+              <span>150,000 VND</span>
+            </div>
+            <div class="d-flex justify-content-between align-items-center">
+              <span class="fw-bold fs-5">Tổng cộng</span>
+              <span class="fw-bold fs-5">3,950,000 VND</span>
+            </div>
+          </div>
         </div>
       </div>
     </div>
