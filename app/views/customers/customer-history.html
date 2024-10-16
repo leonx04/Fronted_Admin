@@ -1,5 +1,235 @@
 <!DOCTYPE html>
-<div class="container">
-    <h1>{{message}}</h1>
-    <!-- Add more content for the home page -->
-</div>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <title>Quản Lý Khách Hàng</title>
+    <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
+</head>
+<body>
+    <div class="container mt-5">
+        <h2 class="mb-4">Quản Lý Khách Hàng</h2>
+        <div class="card">
+            <div class="card-header">
+                <div class="d-flex justify-content-between align-items-center">
+                    <div>
+                        <button class="btn btn-primary" data-toggle="modal" data-target="#addCustomerModal">Thêm Khách Hàng</button>
+                    </div>
+                    <div>
+                        <div class="form-row">
+                            <div class="col">
+                                <input type="text" class="form-control" id="customerCode" placeholder="Mã khách hàng">
+                            </div>
+                            <div class="col">
+                                <input type="text" class="form-control" id="customerName" placeholder="Họ và tên">
+                            </div>
+                            <div class="col">
+                                <select class="form-control" id="customerGender">
+                                    <option value="">Giới tính</option>
+                                    <option value="male">Nam</option>
+                                    <option value="female">Nữ</option>
+                                </select>
+                            </div>
+                            <div class="col">
+                                <input type="text" class="form-control" id="customerPhone" placeholder="Số điện thoại">
+                            </div>
+                            <div class="col">
+                                <input type="text" class="form-control" id="customerEmail" placeholder="Email">
+                            </div>
+                            <div class="col">
+                                <select class="form-control" id="filterStatus">
+                                    <option value="all">Tất cả trạng thái</option>
+                                    <option value="active">Hoạt động</option>
+                                    <option value="inactive">Không hoạt động</option>
+                                </select>
+                            </div>
+                            <div class="col">
+                                <button class="btn btn-primary" id="searchButton">Search</button>
+                                <button class="btn btn-secondary" id="resetButton">Reset</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="card-body">
+                <table class="table table-bordered table-hover">
+                    <thead class="thead-dark">
+                        <tr>
+                            <th>Mã</th>
+                            <th>Họ và tên</th>
+                            <th>Giới tính</th>
+                            <th>Ngày sinh</th>
+                            <th>Số điện thoại</th>
+                            <th>Email</th>
+                            <th>Địa chỉ</th>
+                            <th>Trạng thái</th>
+                            <th>Hành động</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <!-- Ví dụ về một hàng dữ liệu khách hàng -->
+                        <tr>
+                            <td>1</td>
+                            <td>Nguyễn Văn A</td>
+                            <td>Nam</td>
+                            <td>01/01/1990</td>
+                            <td>0123456789</td>
+                            <td>nguyenvana@example.com</td>
+                            <td>123 Đường ABC, Quận 1, TP.HCM</td>
+                            <td><span class="badge badge-success">Hoạt động</span></td>
+                            <td>
+                                <button class="btn btn-warning btn-sm" data-toggle="modal" data-target="#editCustomerModal">Sửa</button>
+                                <button class="btn btn-danger btn-sm">Xóa</button>
+                                <button class="btn btn-info btn-sm" data-toggle="modal" data-target="#updateStatusModal">Cập nhật trạng thái</button>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal Thêm Khách Hàng -->
+    <div class="modal fade" id="addCustomerModal" tabindex="-1" role="dialog" aria-labelledby="addCustomerModalLabel" aria-hidden="true">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="addCustomerModalLabel">Thêm Khách Hàng Mới</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    <form>
+                        <div class="form-group">
+                            <label for="customerName">Tên Khách Hàng</label>
+                            <input type="text" class="form-control" id="customerName" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="customerGender">Giới tính</label>
+                            <select class="form-control" id="customerGender">
+                                <option value="male">Nam</option>
+                                <option value="female">Nữ</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label for="customerBirthdate">Ngày sinh</label>
+                            <input type="date" class="form-control" id="customerBirthdate" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="customerEmail">Email</label>
+                            <input type="email" class="form-control" id="customerEmail" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="customerPhone">Số Điện Thoại</label>
+                            <input type="text" class="form-control" id="customerPhone" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="customerAddress">Địa Chỉ</label>
+                            <input type="text" class="form-control" id="customerAddress" required>
+                        </div>
+                        <button type="submit" class="btn btn-primary">Thêm Khách Hàng</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal Sửa Khách Hàng -->
+    <div class="modal fade" id="editCustomerModal" tabindex="-1" role="dialog" aria-labelledby="editCustomerModalLabel" aria-hidden="true">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="editCustomerModalLabel">Sửa Thông Tin Khách Hàng</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    <form>
+                        <div class="form-group">
+                            <label for="editCustomerName">Tên Khách Hàng</label>
+                            <input type="text" class="form-control" id="editCustomerName" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="editCustomerGender">Giới tính</label>
+                            <select class="form-control" id="editCustomerGender">
+                                <option value="male">Nam</option>
+                                <option value="female">Nữ</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label for="editCustomerBirthdate">Ngày sinh</label>
+                            <input type="date" class="form-control" id="editCustomerBirthdate" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="editCustomerEmail">Email</label>
+                            <input type="email" class="form-control" id="editCustomerEmail" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="editCustomerPhone">Số Điện Thoại</label>
+                            <input type="text" class="form-control" id="editCustomerPhone" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="editCustomerAddress">Địa Chỉ</label>
+                            <input type="text" class="form-control" id="editCustomerAddress" required>
+                        </div>
+                        <button type="submit" class="btn btn-primary">Lưu Thay Đổi</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal Cập Nhật Trạng Thái -->
+    <div class="modal fade" id="updateStatusModal" tabindex="-1" role="dialog" aria-labelledby="updateStatusModalLabel" aria-hidden="true">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="updateStatusModalLabel">Cập Nhật Trạng Thái Khách Hàng</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    <form>
+                        <div class="form-group">
+                            <label for="customerStatus">Trạng Thái</label>
+                            <select class="form-control" id="customerStatus">
+                                <option value="active">Hoạt động</option>
+                                <option value="inactive">Không hoạt động</option>
+                            </select>
+                        </div>
+                        <button type="submit" class="btn btn-primary">Cập Nhật Trạng Thái</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.1/dist/umd/popper.min.js"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+    <script>
+        $(document).ready(function() {
+            $('#searchCustomer').on('keyup', function() {
+                var value = $(this).val().toLowerCase();
+                $('table tbody tr').filter(function() {
+                    $(this).toggle($(this).text().toLowerCase().indexOf(value) > -1)
+                });
+            });
+
+            $('#filterStatus').on('change', function() {
+                var status = $(this).val();
+                $('table tbody tr').filter(function() {
+                    if (status === 'all') {
+                        $(this).show();
+                    } else {
+                        $(this).toggle($(this).find('td:eq(7)').text().toLowerCase().indexOf(status) > -1);
+                    }
+                });
+            });
+        });
+    </script>
+</body>
+</html>

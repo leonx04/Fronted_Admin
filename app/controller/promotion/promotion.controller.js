@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 // Định nghĩa controller PromotionsController
 app.controller('PromotionsController', function ($scope, $http, $interval) {
     // Khai báo các biến và hằng số
@@ -226,3 +227,5 @@ app.controller('PromotionsController', function ($scope, $http, $interval) {
     // Hủy interval khi controller bị hủy
     $scope.$on('$destroy', stopAutoUpdate);
 });
+=======
+>>>>>>> 5e67c745a8ab34bec8365e8eeb8447961fcfb9b8

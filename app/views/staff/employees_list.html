@@ -1,0 +1,184 @@
+<!DOCTYPE html>
+
+    <div id="loading-overlay" ng-show="isLoading">
+        <div class="spinner"></div>
+    </div>
+    <div ng-controller="EmployeesController">
+        <h3 class="h3 mb-2 text-gray-800">Quản lý nhân viên</h3>
+
+        <!-- Search and Filter -->
+        <div class="search-box border rounded p-3 mb-4">
+            <h5 class="mb-3">Search and Filter</h5>
+            <form ng-submit="searchEmployees()">
+                <div class="row">
+                    <div class="col-md-3 mb-3">
+                        <input type="text" class="form-control" ng-model="searchParams.code" placeholder="Mã nhân viên">
+                    </div>
+                    <div class="col-md-3 mb-3">
+                        <input type="text" class="form-control" ng-model="searchParams.fullname"
+                            placeholder="Họ và tên">
+                    </div>
+                    <div class="col-md-3 mb-3">
+                        <select class="form-control" ng-model="searchParams.gender">
+                            <option value="">Tất cả giới tính</option>
+                            <option value="1">Nam</option>
+                            <option value="0">Nữ</option>
+                        </select>
+                    </div>
+                    <div class="col-md-3 mb-3">
+                        <input type="text" class="form-control" ng-model="searchParams.phone"
+                            placeholder="Số điện thoại">
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-md-3 mb-3">
+                        <input type="email" class="form-control" ng-model="searchParams.email" placeholder="Email">
+                    </div>
+                    <div class="col-md-3 mb-3">
+                        <select class="form-control" ng-model="searchParams.status">
+                            <option value="">Tất cả trạng thái</option>
+                            <option value="1">Hoạt động</option>
+                            <option value="0">Không hoạt động</option>
+                        </select>
+                    </div>
+                    <div class="col-12 d-flex justify-content-between">
+                        <button type="submit" class="btn btn-primary">Search</button>
+                        <button type="button" class="btn btn-secondary" ng-click="resetForm()">Reset</button>
+                        <button type="button" class="btn btn-success" ng-click="openAddModal()">Add new</button>
+                    </div>
+                </div>
+            </form>
+        </div>
+
+        <!-- Employee List -->
+        <div class="card shadow mb-4">
+            <div class="card-header py-3">
+                <h6 class="m-0 font-weight-bold text-primary">Danh sách nhân viên</h6>
+            </div>
+            <div class="card-body">
+                <div class="table-responsive">
+                    <table class="table table-bordered" id="loadData" width="100%" cellspacing="0">
+                        <thead>
+                            <tr>
+                                <th>Mã</th>
+                                <th>Họ và tên</th>
+                                <th>Giới tính</th>
+                                <th>Ngày sinh</th>
+                                <th>Số điện thoại</th>
+                                <th>Email</th>
+                                <th>Địa chỉ</th>
+                                <th>Trạng thái</th>
+                                <th>Hành động</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr ng-repeat="employee in employees">
+                                <td>{{employee.code}}</td>
+                                <td>{{employee.username}}</td>
+                                <td>{{employee.gender == 1 ? 'Nam' : 'Nữ'}}</td>
+                                <td>{{employee.birthdate | date:'dd/MM/yyyy'}}</td>
+                                <td>{{employee.phone}}</td>
+                                <td>{{employee.email}}</td>
+                                <td>{{employee.address}}</td>
+                                <td>
+                                    <span class="badge" ng-class="getStatusBadgeClass(employee.status)">
+                                        {{employee.status == 1 ? 'Hoạt động' : 'Không hoạt động'}}
+                                    </span>
+                                </td>
+                                <td>
+                                    <div class="d-flex justify-content-between">
+                                        <button class="btn btn-sm btn-info" ng-click="viewEmployee(employee.id)">
+                                            <i class="fa fa-eye"></i>
+                                        </button>
+                                        <button class="btn btn-sm btn-warning" ng-click="editEmployee(employee.id)">
+                                            <i class="fa fa-edit"></i>
+                                        </button>
+                                    </div>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Add/Edit Employee Modal -->
+    <div class="modal fade" id="employeeModal" tabindex="-1" role="dialog" aria-labelledby="employeeModalLabel" -->
+        aria-hidden="true">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="employeeModalTitle">{{isEditing ? 'Chỉnh Sửa' : 'Thêm'}} Nhân Viên</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    <form id="employeeForm" name="employeeForm" novalidate>
+                        <div class="row mb-3">
+                            <div class="col-md-6">
+                                <label for="code">Mã Nhân Viên</label>
+                                <input type="text" class="form-control" id="code" ng-model="employeeData.code" required>
+                            </div>
+                            <div class="col-md-6">
+                                <label for="fullname">Họ và Tên</label>
+                                <input type="text" class="form-control" id="fullname" ng-model="employeeData.fullname" required>
+                            </div>
+                        </div>
+                        <div class="row mb-3">
+                            <div class="col-md-6">
+                                <label for="gender">Giới tính</label>
+                                <select class="form-control" id="gender" ng-model="employeeData.gender" required>
+                                    <option value="1">Nam</option>
+                                    <option value="0">Nữ</option>
+                                </select>
+                            </div>
+                            <div class="col-md-6">
+                                <label for="birthdate">Ngày sinh</label>
+                                <input type="date" class="form-control" id="birthdate" ng-model="employeeData.birthdate" required>
+                            </div>
+                        </div>
+                        <div class="row mb-3">
+                            <div class="col-md-6">
+                                <label for="phone">Số điện thoại</label>
+                                <input type="text" class="form-control" id="phone" ng-model="employeeData.phone" required>
+                            </div>
+                            <div class="col-md-6">
+                                <label for="email">Email</label>
+                                <input type="email" class="form-control" id="email" ng-model="employeeData.email" required>
+                            </div>
+                        </div>
+                        <div class="row mb-3">
+                            <div class="col-md-6">
+                                <label for="address">Địa chỉ</label>
+                                <input type="text" class="form-control" id="address" ng-model="employeeData.address" required>
+                            </div>
+                            <div class="col-md-6">
+                                <label for="roleid">Chức vụ</label>
+                                <input type="number" class="form-control" id="roleid" ng-model="employeeData.roleid" required>
+                            </div>
+                        </div>
+                        <div class="row mb-3">
+                            <div class="col-md-6">
+                                <label for="status">Trạng thái</label>
+                                <select class="form-control" id="status" ng-model="employeeData.status">
+                                    <option value="1">Hoạt động</option>
+                                    <option value="0">Không hoạt động</option>
+                                </select>
+                            </div>
+                            <div class="col-md-6">
+                                <label for="note">Ghi chú</label>
+                                <input type="text" class="form-control" id="note" ng-model="employeeData.note">
+                            </div>
+                        </div>
+                    </form>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Đóng</button>
+                    <button type="button" class="btn btn-primary" ng-click="saveEmployee()"
+                        ng-disabled="employeeForm.$invalid">Lưu</button>
+                </div>
+            </div>
+        </div>
+    </div>
