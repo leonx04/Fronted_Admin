@@ -176,10 +176,75 @@
         
       }
 
-      .total-row {
-        font-weight: bold;
-        background-color: #f8f9fa;
-      }
+      .invoice-totals {
+    margin-top: 2rem;
+    border-top: 1px solid #dee2e6;
+    padding-top: 1rem;
+  }
+
+  .invoice-totals .row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 0.5rem;
+  }
+
+  .invoice-totals .row:last-child {
+    border-top: 1px solid #dee2e6;
+    padding-top: 0.5rem;
+    margin-top: 0.5rem;
+  }
+
+  .invoice-totals .label {
+    font-weight: bold;
+  }
+
+  .invoice-totals .value {
+    text-align: right;
+  }
+
+  .invoice-totals .total {
+    font-size: 1.1rem;
+  }
+
+  @media (max-width: 767px) {
+    .invoice-totals .row {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 0.5rem;
+      align-items: baseline;
+    }
+
+    .invoice-totals .row:not(:last-child) {
+      grid-template-columns: minmax(auto, 1fr) minmax(100px, auto);
+    }
+
+    .invoice-totals .row:not(:last-child) .value {
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    .invoice-totals .value {
+      text-align: right;
+    }
+
+    .invoice-totals .label {
+      white-space: normal;
+      word-break: break-word;
+    }
+  }
+
+  @media (max-width: 380px) {
+    .invoice-totals .row:last-child {
+      grid-template-columns: 1fr;
+    }
+
+    .invoice-totals .row:last-child .value {
+      text-align: left;
+    }
+  }
+  
     </style>
   </head>
   <body>
@@ -282,20 +347,21 @@
             </table>
           </div>
 
-          <div class="mt-4">
-            <div class="d-flex justify-content-between align-items-center mb-2">
-              <span class="fw-bold">Phí Vận Chuyển</span>
-              <span>50,000 VND</span>
+          <div class="invoice-totals">
+            <div class="row">
+              <span class="label">Phí Vận Chuyển</span>
+              <span class="value">50,000 VND</span>
             </div>
-            <div class="d-flex justify-content-between align-items-center mb-2">
-              <span class="fw-bold">Voucher</span>
-              <span>150,000 VND</span>
+            <div class="row">
+              <span class="label">Voucher</span>
+              <span class="value">150,000 VND</span>
             </div>
-            <div class="d-flex justify-content-between align-items-center">
-              <span class="fw-bold fs-5">Tổng cộng</span>
-              <span class="fw-bold fs-5">3,950,000 VND</span>
+            <div class="row">
+              <span class="label total">Tổng cộng</span>
+              <span class="value total">3,950,000 VND</span>
             </div>
           </div>
+          
         </div>
       </div>
     </div>
