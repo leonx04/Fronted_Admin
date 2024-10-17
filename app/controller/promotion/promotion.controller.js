@@ -1,5 +1,5 @@
 // Định nghĩa controller PromotionsController
-app.controller('PromotionsController', function ($scope, $http, $interval) {
+app.controller('PromotionsController', function ($scope, $http, $interval, $timeout) {
     // Khai báo các biến và hằng số
     const API_URL = "http://localhost:8080/api/admin/promotions";
     const PAGE_SIZE = 3;
@@ -15,6 +15,7 @@ app.controller('PromotionsController', function ($scope, $http, $interval) {
     $scope.currentPage = 0;
     $scope.totalItems = 0;
     $scope.totalPages = 0;
+    $scope.validationErrors = [];
 
     // Biến local
     let currentPromotionId = null;
@@ -37,11 +38,11 @@ app.controller('PromotionsController', function ($scope, $http, $interval) {
         }).then(function (response) {
             updateScope(response.data);
         }).catch(handleError("Lỗi khi tải danh sách khuyến mãi"))
-          .finally(() => {
-              if (!isAutoUpdate) {
-                  $scope.isLoading = false;
-              }
-          });
+            .finally(() => {
+                if (!isAutoUpdate) {
+                    $scope.isLoading = false;
+                }
+            });
     };
 
     // Hàm tìm kiếm khuyến mãi
@@ -95,25 +96,78 @@ app.controller('PromotionsController', function ($scope, $http, $interval) {
             .finally(() => $scope.isLoading = false);
     };
 
-    // Hàm lưu khuyến mãi (thêm mới hoặc cập nhật)
+    // Cập nhật hàm validatePromotion
+    $scope.validatePromotion = function () {
+        $scope.validationErrors = []; // Reset lỗi
+
+        if (!$scope.promotionData.code || $scope.promotionData.code.trim() === '') {
+            $scope.validationErrors.push('Mã khuyến mãi không được để trống');
+        }
+
+        if (!$scope.promotionData.name || $scope.promotionData.name.trim() === '') {
+            $scope.validationErrors.push('Tên khuyến mãi không được để trống');
+        }
+
+        if (!$scope.promotionData.startDate) {
+            $scope.validationErrors.push('Ngày bắt đầu không được để trống');
+        }
+
+        if (!$scope.promotionData.endDate) {
+            $scope.validationErrors.push('Ngày kết thúc không được để trống');
+        }
+
+        if ($scope.promotionData.startDate && $scope.promotionData.endDate) {
+            if ($scope.promotionData.startDate >= $scope.promotionData.endDate) {
+                $scope.validationErrors.push('Ngày kết thúc phải sau ngày bắt đầu');
+            }
+        }
+
+        if ($scope.promotionData.discountPercentage === undefined || $scope.promotionData.discountPercentage === null) {
+            $scope.validationErrors.push('Giá trị giảm giá không được để trống');
+        } else {
+            let discountValue = parseFloat($scope.promotionData.discountPercentage);
+            if (isNaN(discountValue) || discountValue <= 0 || discountValue > 90) {
+                $scope.validationErrors.push('Giá trị giảm giá phải là số dương và không vượt quá 90%');
+            }
+        }
+
+        return $scope.validationErrors.length === 0;
+    };
+
+    // Thêm hàm hiển thị lỗi tuần tự
+    function displayErrorsSequentially(index = 0) {
+        if (index < $scope.validationErrors.length) {
+            toastr.error($scope.validationErrors[index], '', {
+                onHidden: function () {
+                    // Hiển thị lỗi tiếp theo sau khi lỗi hiện tại đã ẩn
+                    $timeout(function () {
+                        displayErrorsSequentially(index + 1);
+                    }, 300);
+                }
+            });
+        }
+    }
+
     $scope.savePromotion = function () {
+        if (!$scope.validatePromotion()) {
+            displayErrorsSequentially();
+            return;
+        }
+
         $scope.isLoading = true;
-        let url = $scope.isEditing ? `${API_URL}/update/${currentPromotionId}` : API_URL;
-        let method = $scope.isEditing ? 'PUT' : 'POST';
+        let url = `${API_URL}/update/${currentPromotionId}`;
         let dataToSend = preparePromotionData();
 
-        $http({
-            method: method,
-            url: url,
-            data: dataToSend
-        }).then(function (response) {
-            $('#PromotionModal').modal('hide');
-            $scope.loadData($scope.currentPage);
-            toastr.success("Lưu khuyến mãi thành công!");
-            startAutoUpdate();
-        }).catch(handleError("Lỗi khi lưu khuyến mãi"))
-          .finally(() => $scope.isLoading = false);
+        $http.put(url, dataToSend)
+            .then(function (response) {
+                $('#PromotionModal').modal('hide');
+                $scope.loadData($scope.currentPage);
+                toastr.success("Cập nhật khuyến mãi thành công!");
+                startAutoUpdate();
+            }).catch(handleError("Lỗi khi cập nhật khuyến mãi"))
+            .finally(() => $scope.isLoading = false);
     };
+
 
     // Hàm mở modal xác nhận xóa
     $scope.openDeleteConfirmModal = function (id) {
@@ -136,13 +190,6 @@ app.controller('PromotionsController', function ($scope, $http, $interval) {
             .finally(() => $scope.isLoading = false);
     };
 
-    // Hàm mở modal thêm mới khuyến mãi
-    $scope.openAddModal = function() {
-        $scope.isEditing = false;
-        $scope.promotionData = {};
-        stopAutoUpdate();
-        $('#PromotionModal').modal('show');
-    };
 
     // Hàm hỗ trợ: Hiển thị trạng thái khuyến mãi
     $scope.getStatusDisplay = function (status) {
@@ -167,10 +214,10 @@ app.controller('PromotionsController', function ($scope, $http, $interval) {
     };
 
     // Hàm tạo mảng số trang để hiển thị
-    $scope.getPageRange = function() {
+    $scope.getPageRange = function () {
         let start = Math.max(1, $scope.currentPage - 1);
         let end = Math.min($scope.totalPages - 2, $scope.currentPage + 1);
-        return Array.from({length: end - start + 1}, (_, i) => start + i);
+        return Array.from({ length: end - start + 1 }, (_, i) => start + i);
     };
 
     // Hàm cập nhật dữ liệu scope từ response
@@ -183,7 +230,7 @@ app.controller('PromotionsController', function ($scope, $http, $interval) {
 
     // Hàm xử lý lỗi chung
     function handleError(message) {
-        return function(error) {
+        return function (error) {
             console.error(message, error);
             toastr.error(message);
         };
@@ -207,7 +254,7 @@ app.controller('PromotionsController', function ($scope, $http, $interval) {
     // Hàm bắt đầu tự động cập nhật
     function startAutoUpdate() {
         stopAutoUpdate(); // Đảm bảo không có interval đang chạy
-        updateInterval = $interval(function() {
+        updateInterval = $interval(function () {
             $scope.loadData($scope.currentPage, true);
         }, AUTO_UPDATE_INTERVAL);
     }

@@ -4,87 +4,111 @@ app.config(function ($routeProvider) {
   $routeProvider
     .when('/', {
       templateUrl: 'app/views/dashboard.html',
-      controller: 'DashboardController'
+      controller: 'DashboardController',
+      title: 'Dashboard'
     })
     .when('/home', {
       templateUrl: 'app/views/home.html',
-      controller: 'HomeController'
+      controller: 'HomeController',
+      title: 'Trang Chủ'
     })
     .when('/sales', {
       templateUrl: 'app/views/sales.html',
-      controller: 'SalesController'
+      controller: 'SalesController',
+      title: 'Bán Hàng'
     })
     .when('/orders-pending', {
       templateUrl: 'app/views/order/orders-pending.html',
-      controller: 'OrdersPendingController'
+      controller: 'OrdersPendingController',
+      title: 'Đơn Hàng Chờ Xử Lý'
     })
     .when('/orders-list', {
       templateUrl: 'app/views/order/orders-list.html',
-      controller: 'OrdersListController'
+      controller: 'OrdersListController',
+      title: 'Danh Sách Đơn Hàng'
     })
     .when('/products-list', {
       templateUrl: 'app/views/products/products-list.html',
-      controller: 'ProductsController'
+      controller: 'ProductsController',
+      title: 'Danh Sách Sản Phẩm'
     })
     .when('/attributes-color', {
       templateUrl: 'app/views/products/atributes/attributes-color.html',
-      controller: 'AttributesColorsController'
+      controller: 'AttributesColorsController',
+      title: 'Thuộc Tính Màu Sắc'
     })
     .when('/attributes-size', {
       templateUrl: 'app/views/products/atributes/attributes-size.html',
-      controller: 'AttributesSizeController'
+      controller: 'AttributesSizeController',
+      title: 'Thuộc Tính Kích Cỡ'
     })
     .when('/attributes-brand', {
       templateUrl: 'app/views/products/atributes/attributes-brand.html',
-      controller: 'AttributesBrandController'
+      controller: 'AttributesBrandController',
+      title: 'Thuộc Tính Thương Hiệu'
     })
     .when('/attributes-material', {
       templateUrl: 'app/views/products/atributes/attributes-material.html',
-      controller: 'AttributesMaterialController'
+      controller: 'AttributesMaterialController',
+      title: 'Thuộc Tính Chất Liệu'
     })
     .when('/attributes-sole', {
       templateUrl: 'app/views/products/atributes/attributes-sole.html',
-      controller: 'AttributesSoleController'
+      controller: 'AttributesSoleController',
+      title: 'Thuộc Tính Đế Giày'
     })
     .when('/attributes-category', {
       templateUrl: 'app/views/products/atributes/attributes-category.html',
-      controller: 'AttributesCaegoryController'
+      controller: 'AttributesCaegoryController',
+      title: 'Thuộc Tính Thể Loại'
     })
     .when('/promotions', {
       templateUrl: 'app/views/promotion/promotion-list.html',
-      controller: 'PromotionsController'
+      controller: 'PromotionsController',
+      title: 'Danh Sách Khuyến Mãi'
     })
     .when('/vouchers', {
       templateUrl: 'app/views/vouchers/vouchers-list.html',
-      controller: 'VouchersController'
+      controller: 'VouchersController',
+      title: 'Danh Sách Phiếu Giảm Giá'
     })
     .when('/employees', {
       templateUrl: 'app/views/staff/employees.html',
-      controller: 'EmployeesController'
+      controller: 'EmployeesController',
+      title: 'Quản Lý Nhân Viên'
     })
     .when('/customers-list', {
       templateUrl: 'app/views/customers/customer-list.html',
-      controller: 'CustomersListController'
+      controller: 'CustomersListController',
+      title: 'Danh Sách Khách Hàng'
     })
     .when('/customers-history', {
       templateUrl: 'app/views/customers/customer-history.html',
-      controller: 'CustomersHistoryController'
+      controller: 'CustomersHistoryController',
+      title: 'Lịch Sử Khách Hàng'
     })
     .when('/404', {
       templateUrl: 'app/views/exception/404.html',
-      controller: '404Controllers'
+      controller: '404Controllers',
+      title: '404 Not Found'
     })
     .when('/add-promotion', {
       templateUrl: 'app/views/promotion/promotion-add.html',
-      controller: 'AddPromotionController'
+      controller: 'AddPromotionController',
+      title: 'Thêm Khuyến Mãi'
     })
     .otherwise({
-      redirectTo: '/'
+      redirectTo: '/',
+      title: '404 Not Found'
     });
 });
 
-app.run(['$rootScope', '$location', function ($rootScope, $location) {
-  $rootScope.$on('$routeChangeSuccess', function () {
+app.run(['$rootScope', '$route', '$location', function ($rootScope, $route, $location) {
+  $rootScope.$on('$routeChangeSuccess', function (event, current, previous) {
+    // Cập nhật tiêu đề trang
+    $rootScope.title = current.$$route ? current.$$route.title : '360 Sneaker';
+    document.title = '360 Sneaker - ' + $rootScope.title;
+
     setTimeout(function () {
       // Xử lý nút toggle sidebar
       $('#sidebarToggleTop').off('click').on('click', function () {

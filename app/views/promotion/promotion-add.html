@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<div class="row">
+<div class="row" ng-controller="AddPromotionController">
     <!-- Cột bên trái: Form thêm promotion -->
     <div class="col-md-3">
         <div class="card">
@@ -7,33 +7,35 @@
                 <h5>Thêm Khuyến Mãi</h5>
             </div>
             <div class="card-body">
-                <form>
+                <form ng-submit="savePromotion()">
                     <div class="form-group">
                         <label for="code">Mã khuyến mãi</label>
-                                <input type="text" class="form-control" id="code" ng-model="promotionData.code"
-                                    required>
+                        <input type="text" class="form-control" id="code" ng-model="promotionData.code" required>
                     </div>
                     <div class="form-group">
                         <label for="name">Tên khuyến mãi</label>
-                                <input type="text" class="form-control" id="name" ng-model="promotionData.name"
-                                    required>
+                        <input type="text" class="form-control" id="name" ng-model="promotionData.name" required>
                     </div>
                     <div class="form-group">
                         <label for="discountPercentage">Giá trị giảm giá (%)</label>
-                                <input type="number" step="0.01" class="form-control" id="discountPercentage"
-                                    ng-model="promotionData.discountPercentage" required>
+                        <input type="number" class="form-control" id="discountPercentage"
+                            ng-model="promotionData.discountPercentage" required min="0" max="90">
                     </div>
                     <div class="form-group">
                         <label for="startDate">Ngày bắt đầu</label>
-                                <input type="datetime-local" id="startDate" name="startDate" class="form-control"
-                                    ng-model="promotionData.startDate" step="1" required>
+                        <input type="datetime-local" class="form-control" id="startDate"
+                            ng-model="promotionData.startDate" required>
                     </div>
                     <div class="form-group">
                         <label for="endDate">Ngày kết thúc</label>
-                                <input type="datetime-local" id="endDate" name="endDate" class="form-control"
-                                    ng-model="promotionData.endDate" step="1" required>
+                        <input type="datetime-local" class="form-control" id="endDate" ng-model="promotionData.endDate"
+                            required>
                     </div>
-                    <button type="submit" class="btn btn-success btn-block">Thêm</button>
+                    <button type="submit" class="btn btn-primary w-100" ng-disabled="isLoading">
+                        <span ng-if="isLoading" class="spinner-border spinner-border-sm" role="status"
+                            aria-hidden="true"></span>
+                        Thêm
+                    </button>
                 </form>
             </div>
         </div>
