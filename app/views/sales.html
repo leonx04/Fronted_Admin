@@ -1,27 +1,149 @@
 <!DOCTYPE html>
-<div class="container mt-5">
-    <div class="row">
-        <div class="col text-right">
-            <button class="btn btn-primary" id="createInvoiceBtn">
-                <i class="fas fa-plus"></i>
-                <span> Tạo hóa đơn</span>
-            </button>
-        </div>
-    </div>
+<html lang="en">
 
-    <div class="mt-2">
-        <ul class="nav nav-tabs" id="invoiceTab" role="tablist">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Bán Hàng - Giao Diện</title>
+  <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+  <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.1/dist/umd/popper.min.js"></script>
+  <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+  <style>
+    .navbar-custom {
+      background-color: #dc3545;
+      color: white;
+    }
+    .form-control::placeholder {
+      font-style: italic;
+    }
+    .card-empty {
+      text-align: center;
+      padding: 40px 0;
+      color: gray;
+    }
+    .info-section {
+      background-color: #f8f9fa;
+      border-radius: 10px;
+      padding: 20px;
+      margin-bottom: 10px;
+    }
+    .checkout-btn {
+      font-size: 24px;
+      font-weight: bold;
+    }
+    .toggle-switch {
+      display: flex;
+      align-items: center;
+    }
+    .toggle-switch input {
+      margin-left: 10px;
+    }
+  </style>
+</head>
+
+<body class="bg-light">
+  <div class="container-fluid">
+    <!-- Navbar -->
+    <nav class="navbar navbar-custom">
+      <div class="container">
+        <input type="text" class="form-control mr-2" placeholder="F3 Tìm kiếm sản phẩm" style="width: 300px;">
+        <button class="btn btn-light">Hóa đơn mặc định</button>
+      </div>
+    </nav>
+
+    <div class="row mt-3">
+      <!-- Danh sách sản phẩm hoặc thông tin đơn hàng (trái) -->
+      <div class="col-md-8">
+        <div class="card">
+          <div class="card-body card-empty">
+            <img src="https://cdn-icons-png.flaticon.com/512/504/504052.png" alt="Empty" width="100">
+            <h5 class="mt-3">Đơn hàng của bạn chưa có sản phẩm nào!</h5>
+          </div>
+        </div>
+
+        <div class="info-section mt-3">
+          <ul class="nav nav-tabs" id="customerTab" role="tablist">
             <li class="nav-item">
-                <a class="nav-link active" id="invoice-1-tab" data-toggle="tab" href="#invoice-1" role="tab"
-                    aria-controls="invoice-1" aria-selected="true">Hóa đơn 1</a>
+              <a class="nav-link active" id="product-tab" data-toggle="tab" href="#products" role="tab">Danh sách sản phẩm</a>
             </li>
-        </ul>
-
-        <div class="tab-content mt-3" id="invoiceTabContent">
-            <div class="tab-pane fade show active" id="invoice-1" role="tabpanel" aria-labelledby="invoice-1-tab">
-                <h5>Hóa đơn 1</h5>
-                <p>Chi tiết hóa đơn 1...</p>
+            <li class="nav-item">
+              <a class="nav-link" id="guest-tab" data-toggle="tab" href="#guest" role="tab">Khách hàng (Khách vãng lai)</a>
+            </li>
+          </ul>
+          <div class="tab-content" id="customerTabContent">
+            <div class="tab-pane fade show active" id="products" role="tabpanel">
+              <div class="form-row mt-3">
+                <div class="col-md-4">
+                  <input type="text" class="form-control" placeholder="Điện thoại (F4)">
+                </div>
+                <div class="col-md-4">
+                  <input type="text" class="form-control" placeholder="Tên khách">
+                </div>
+                <div class="col-md-4">
+                  <input type="email" class="form-control" placeholder="Email">
+                </div>
+              </div>
+              <div class="form-row mt-3">
+                <div class="col-md-4">
+                  <select class="form-control">
+                    <option>Tỉnh/Thành phố</option>
+                  </select>
+                </div>
+                <div class="col-md-4">
+                  <select class="form-control">
+                    <option>Quận/Huyện</option>
+                  </select>
+                </div>
+                <div class="col-md-4">
+                  <select class="form-control">
+                    <option>Phường/Xã</option>
+                  </select>
+                </div>
+              </div>
+              <div class="form-row mt-3">
+                <div class="col-md-4">
+                  <select class="form-control">
+                    <option>Khác</option>
+                  </select>
+                </div>
+                <div class="col-md-4">
+                  <input type="date" class="form-control">
+                </div>
+                <div class="col-md-4">
+                  <input type="text" class="form-control" placeholder="Địa chỉ chi tiết">
+                </div>
+              </div>
+              <button class="btn btn-warning mt-3">Lưu thông tin</button>
             </div>
+            <div class="tab-pane fade" id="guest" role="tabpanel">
+              <p>Thông tin khách hàng vãng lai...</p>
+            </div>
+          </div>
         </div>
+      </div>
+
+      <!-- Thông tin thanh toán (phải) -->
+      <div class="col-md-4">
+        <div class="card">
+          <div class="card-body">
+            <h5>Tổng tiền: 0 đ (0 sản phẩm)</h5>
+            <p>Phí vận chuyển: <b>Chưa hoặc miễn phí</b></p>
+            <p>Voucher: <a href="#">Chọn hoặc nhập mã</a></p>
+            <p>Chiết khấu: 0 đ</p>
+            <p><b>KHÁCH PHẢI TRẢ: 0 đ</b></p>
+            <p>Tiền khách đưa: 0 đ</p>
+            <p>Tiền thừa trả khách: 0 đ</p>
+            <div class="toggle-switch">
+              <label for="printInvoice">In hóa đơn</label>
+              <input type="checkbox" id="printInvoice">
+            </div>
+            <button class="btn btn-success btn-block checkout-btn mt-3">Thanh toán (F9)</button>
+          </div>
+        </div>
+      </div>
     </div>
-</div>
+  </div>
+</body>
+
+</html>
