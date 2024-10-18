@@ -1,0 +1,304 @@
+<!DOCTYPE html>
+<html lang="vi" ng-app="360SneakerApp">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Hóa Đơn Chi Tiết</title>
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.1.3/css/bootstrap.min.css"
+    />
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css"
+    />
+    <style>
+      .text-center {
+        margin-bottom: 20px;
+      }
+
+      .sidebar-brand-icon {
+        font-size: 3rem;
+        color: #333;
+      }
+
+      .sidebar-brand-text {
+        font-size: 1.5rem;
+        font-weight: bold;
+        margin-top: 10px;
+        color: #333;
+      }
+
+      @media (max-width: 768px) {
+        .card-body {
+          padding: 1rem;
+        }
+        h2,
+        h4,
+        h5 {
+          font-size: 1.2rem;
+        }
+        .table {
+          font-size: 0.9rem;
+        }
+        .img-fluid {
+          max-width: 100px;
+        }
+      }
+
+      @media (max-width: 576px) {
+        .d-flex.align-items-center {
+          flex-direction: column;
+          align-items: flex-start !important;
+        }
+        .back-arrow {
+          margin-bottom: 1rem;
+        }
+      }
+
+      .product-image {
+        width: 50px;
+        height: 50px;
+        object-fit: cover;
+      }
+
+      .table-responsive-custom {
+        overflow-x: auto;
+      }
+
+      .table-responsive-custom table {
+        width: 100%;
+      }
+
+      .product-info {
+        display: flex;
+        align-items: center;
+      }
+
+      .product-name {
+        margin-left: 10px;
+      }
+
+      @media screen and (min-width: 768px) {
+        .table-responsive-custom tr {
+          display: table-row;
+        }
+
+        .table-responsive-custom th,
+        .table-responsive-custom td {
+          display: table-cell;
+          text-align: left;
+          padding: 0.5rem;
+          vertical-align: middle;
+        }
+
+        .table-responsive-custom th:nth-child(n + 3),
+        .table-responsive-custom td:nth-child(n + 3) {
+          text-align: right;
+        }
+
+        .table-responsive-custom td:first-child {
+          width: 40%;
+        }
+
+        .table-responsive-custom td:nth-child(2) {
+          text-align: center;
+        }
+      }
+
+      @media screen and (max-width: 767px) {
+        .table-responsive-custom thead {
+          display: none;
+        }
+
+        .table-responsive-custom tr {
+          display: block;
+          margin-bottom: 1rem;
+          border: 1px solid #dee2e6;
+          border-radius: 0.25rem;
+          padding: 0.5rem;
+        }
+
+        .table-responsive-custom td {
+          display: flex;
+          justify-content: space-between;
+          text-align: right;
+          padding: 0.25rem 0;
+          border: none;
+        }
+
+        .table-responsive-custom td::before {
+          content: attr(data-label);
+          font-weight: bold;
+          text-align: left;
+          padding-right: 0.5rem;
+        }
+
+        .table-responsive-custom .product-cell {
+          flex-direction: column;
+          align-items: flex-start;
+        }
+
+        .table-responsive-custom .product-cell::before {
+          content: none;
+        }
+
+        .table-responsive-custom .product-info {
+          display: flex;
+          align-items: center;
+          margin-bottom: 0.5rem;
+        }
+
+        .table-responsive-custom .product-image {
+          margin-right: 0.5rem;
+        }
+
+        .table-responsive-custom .shipping-fee-row,
+        .table-responsive-custom .total-row {
+          background-color: #f8f9fa;
+          font-weight: bold;
+        }
+        .table-responsive-custom .shipping-fee-row td,
+        .table-responsive-custom .total-row td {
+          display: flex;
+          justify-content: space-between;
+        }
+
+        .table-responsive-custom .shipping-fee-row td::before,
+        .table-responsive-custom .total-row td::before {
+          content: attr(data-label);
+        }
+
+        .table-responsive-custom .shipping-fee-row td[colspan],
+        .table-responsive-custom .total-row td[colspan] {
+          display: none;
+        }
+        
+      }
+
+      .total-row {
+        font-weight: bold;
+        background-color: #f8f9fa;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="container my-5">
+      <div class="d-flex align-items-center mb-4">
+        <div>
+          <button
+            class="btn btn-link ps-0"
+            ng-click="goBack()"
+            title="Quay lại danh sách đơn hàng"
+          >
+            <i class="fas fa-arrow-left"></i>
+          </button>
+        </div>
+        <h2 class="mb-0">Chi tiết hóa đơn</h2>
+      </div>
+      <div class="card">
+        <div class="card-body">
+          <div class="text-center">
+            <div class="sidebar-brand-icon rotate-n-15">
+              <i class="fas fa-shoe-prints"></i>
+            </div>
+            <div class="sidebar-brand-text">360 Sneaker</div>
+          </div>
+
+          <div class="row mb-4">
+            <div class="col-md-6 mb-3 mb-md-0">
+              <h5 class="mb-3">Thông tin hóa đơn</h5>
+              <div><strong>Hóa đơn #: 123</strong></div>
+              <div>Ngày tạo: 01/10/2024</div>
+              <div>Thời hạn: 15/10/2024</div>
+            </div>
+            <div class="col-md-6">
+              <h5 class="mb-3">Thông tin khách hàng</h5>
+              <div><strong>Khách hàng: Nguyễn Văn A</strong></div>
+              <div>Địa chỉ: 456 Phố Khách</div>
+              <div>Thành phố: Hà Nội</div>
+            </div>
+          </div>
+
+          <div class="row mb-4">
+            <div class="col-md-6">
+              <h5 class="mb-3">Thanh toán</h5>
+              <div class="mb-2">
+                <strong>Hình thức thanh toán:</strong>
+                <span class="badge bg-primary">Thanh toán online trên web</span>
+              </div>
+              <div><strong>Phương thức thanh toán:</strong> Thẻ tín dụng</div>
+              <div>Ngân hàng ABC: 1234 5678 9012 3456</div>
+            </div>
+          </div>
+
+          <div class="table-responsive-custom">
+            <table class="table">
+              <thead>
+                <tr>
+                  <th>Sản phẩm</th>
+                  <th>Số lượng</th>
+                  <th>Đơn giá</th>
+                  <th>Thành tiền</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td class="product-cell">
+                    <div class="product-info">
+                      <img src="" class="product-image" />
+                      <span class="product-name"
+                        >Giày Thể Thao Nike Air Max</span
+                      >
+                    </div>
+                  </td>
+                  <td data-label="Số lượng">2</td>
+                  <td data-label="Đơn giá">1,500,000 VND</td>
+                  <td data-label="Thành tiền">3,000,000 VND</td>
+                </tr>
+                <tr>
+                  <td class="product-cell">
+                    <div class="product-info">
+                      <img src="" class="product-image" />
+                      <span class="product-name">Áo thun Adidas Originals</span>
+                    </div>
+                  </td>
+                  <td data-label="Số lượng">1</td>
+                  <td data-label="Đơn giá">500,000 VND</td>
+                  <td data-label="Thành tiền">500,000 VND</td>
+                </tr>
+                <tr>
+                  <td class="product-cell">
+                    <div class="product-info">
+                      <img src="" class="product-image" />
+                      <span class="product-name">Quần short Puma Sport</span>
+                    </div>
+                  </td>
+                  <td data-label="Số lượng">1</td>
+                  <td data-label="Đơn giá">400,000 VND</td>
+                  <td data-label="Thành tiền">400,000 VND</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+
+          <div class="mt-4">
+            <div class="d-flex justify-content-between align-items-center mb-2">
+              <span class="fw-bold">Phí Vận Chuyển</span>
+              <span>50,000 VND</span>
+            </div>
+            <div class="d-flex justify-content-between align-items-center mb-2">
+              <span class="fw-bold">Voucher</span>
+              <span>150,000 VND</span>
+            </div>
+            <div class="d-flex justify-content-between align-items-center">
+              <span class="fw-bold fs-5">Tổng cộng</span>
+              <span class="fw-bold fs-5">3,950,000 VND</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <script src="/app/controller/orders/orders-list.controller.js"></script>
+  </body>
+</html>

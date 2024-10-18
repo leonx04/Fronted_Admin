@@ -1,3 +1,4 @@
+
 const app = angular.module('360SneakerApp', ['ngRoute']);
 
 app.config(function ($routeProvider) {
@@ -59,7 +60,7 @@ app.config(function ($routeProvider) {
       controller: 'VouchersController'
     })
     .when('/employees', {
-      templateUrl: 'app/views/staff/employees.html',
+      templateUrl: 'app/views/staff/employees_list.html',
       controller: 'EmployeesController'
     })
     .when('/customers-list', {
@@ -74,9 +75,9 @@ app.config(function ($routeProvider) {
       templateUrl: 'app/views/exception/404.html',
       controller: '404Controllers'
     })
-    .when('/add-promotion', {
-      templateUrl: 'app/views/promotion/promotion-add.html',
-      controller: 'AddPromotionController'
+    .when('/order-detail/:code', {
+      templateUrl: 'app/views/order/orderdetails.html',
+      controller: 'OrdersListController'
     })
     .otherwise({
       redirectTo: '/'
