@@ -1,130 +1,143 @@
-<div class="row" ng-controller="AddPromotionController">
-    <!-- Form Column -->
-    <div class="col-md-3">
-        <div class="card shadow-sm">
-            <div class="card-header bg-primary text-white text-center">
-                <h5 class="mb-0">Thêm Khuyến Mãi</h5>
-            </div>
-            <div class="card-body">
-                <form ng-submit="savePromotion()">
-                    <div class="form-group">
-                        <label>Mã khuyến mãi</label>
-                        <input type="text" class="form-control" ng-model="promotionData.code" required>
-                    </div>
-
-                    <div class="form-group">
-                        <label>Tên khuyến mãi</label>
-                        <input type="text" class="form-control" ng-model="promotionData.name" required>
-                    </div>
-
-                    <div class="form-group">
-                        <label>Giá trị giảm giá (%)</label>
-                        <input type="number" class="form-control" ng-model="promotionData.discountPercentage" min="0" max="90" required>
-                    </div>
-
-                    <div class="form-group">
-                        <label>Ngày bắt đầu</label>
-                        <input type="datetime-local" class="form-control" ng-model="promotionData.startDate" required>
-                    </div>
-
-                    <div class="form-group">
-                        <label>Ngày kết thúc</label>
-                        <input type="datetime-local" class="form-control" ng-model="promotionData.endDate" required>
-                    </div>
-
-                    <button type="submit" class="btn btn-primary w-100" ng-disabled="isLoading">
-                        <span class="spinner-border spinner-border-sm" ng-if="isLoading" role="status" aria-hidden="true"></span>
-                        Thêm
-                    </button>
-                </form>
-            </div>
-        </div>
-    </div>
-
-    <!-- Products List Column -->
-    <div class="col-md-9">
-        <div class="card mb-4 shadow-sm">
-            <div class="card-header bg-info text-white text-center">
-                <h5 class="mb-0">Danh Sách Sản Phẩm</h5>
-            </div>
-            <div class="card-body p-0">
-                <table class="table table-striped mb-0">
-                    <thead>
-                        <tr>
-                            <th>STT</th>
-                            <th>Mã Sản Phẩm</th>
-                            <th>Tên Sản Phẩm</th>
-                            <th>Trạng Thái</th>
-                            <th>Thao tác</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        <tr ng-repeat="product in products">
-                            <td>{{$index + 1}}</td>
-                            <td>{{product.id}}</td>
-                            <td>{{product.name}}</td>
-                            <td>
-                                <span class="badge" ng-class="{'badge-success': product.status === 1, 'badge-danger': product.status === 0}">
-                                    {{product.status === 1 ? 'Còn Hàng' : 'Hết Hàng'}}
-                                </span>
-                            </td>
-                            <td>
-                                <button class="btn btn-sm btn-info" ng-click="selectProduct(product)">
-                                    Xem chi tiết
-                                </button>
-                            </td>
-                        </tr>
-                    </tbody>
-                </table>
+<!-- promotion-add.html -->
+<div class="container-fluid py-4" ng-controller="AddPromotionController">
+    <div class="row">
+        <!-- Promotion Form Card -->
+        <div class="col-md-3">
+            <div class="card shadow-sm border-0">
+                <div class="card-header bg-primary text-white text-center py-3">
+                    <h5 class="mb-0">Thêm Khuyến Mãi</h5>
+                </div>
+                <div class="card-body">
+                    <form ng-submit="savePromotion()" name="promotionForm">
+                        <div class="form-group mb-3">
+                            <label class="form-label">Mã khuyến mãi</label>
+                            <input type="text" class="form-control" ng-model="promotionData.code">
+                        </div>
+                        <div class="form-group mb-3">
+                            <label class="form-label">Tên khuyến mãi</label>
+                            <input type="text" class="form-control" ng-model="promotionData.name">
+                        </div>
+                        <div class="form-group mb-3">
+                            <label class="form-label">Giá trị giảm giá (%)</label>
+                            <input type="number" class="form-control" ng-model="promotionData.discountPercentage">
+                        </div>
+                        <div class="form-group mb-3">
+                            <label class="form-label">Ngày bắt đầu</label>
+                            <input type="date" class="form-control" ng-model="promotionData.startDate">
+                        </div>
+                        <div class="form-group mb-3">
+                            <label class="form-label">Ngày kết thúc</label>
+                            <input type="date" class="form-control" ng-model="promotionData.endDate">
+                        </div>
+                        <button type="submit" class="btn btn-primary w-100" ng-disabled="isLoading">
+                            <span class="spinner-border spinner-border-sm me-2" ng-if="isLoading" role="status"></span>
+                            Thêm khuyến mãi
+                        </button>
+                    </form>
+                </div>
             </div>
         </div>
 
-        <!-- Product Details -->
-        <div class="card" ng-if="selectedProductDetails.length > 0">
-            <div class="card-header bg-secondary text-white d-flex justify-content-between align-items-center">
-                <h5 class="mb-0">Chi Tiết Sản Phẩm</h5>
-                <div class="form-check">
-                    <input type="checkbox" class="form-check-input" ng-click="toggleAll()" ng-checked="selectedProductDetails.length && selectedProductDetails.every(item => item.selected)">
-                    <label class="form-check-label text-white">Chọn tất cả</label>
+        <!-- Products List Card -->
+        <div class="col-md-9">
+            <div class="card shadow-sm border-0 mb-4">
+                <div class="card-header bg-info text-white text-center py-3">
+                    <h5 class="mb-0">Danh Sách Sản Phẩm</h5>
+                </div>
+                <div class="card-body p-0">
+                    <div class="table-responsive">
+                        <table class="table table-hover mb-0">
+                            <thead class="bg-light">
+                                <tr>
+                                    <th>STT</th>
+                                    <th>Mã Sản Phẩm</th>
+                                    <th>Tên Sản Phẩm</th>
+                                    <th>Trạng Thái</th>
+                                    <th>Thao tác</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr ng-repeat="product in products">
+                                    <td>{{$index + 1}}</td>
+                                    <td>{{product.id}}</td>
+                                    <td>{{product.name}}</td>
+                                    <td>
+                                        <span class="badge" 
+                                              ng-class="{'bg-success': product.status === 1, 'bg-danger': product.status === 0}">
+                                            {{product.status === 1 ? 'Còn Hàng' : 'Hết Hàng'}}
+                                        </span>
+                                    </td>
+                                    <td>
+                                        <button class="btn btn-sm btn-outline-primary" 
+                                                ng-click="selectProduct(product)">
+                                            Xem chi tiết
+                                        </button>
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
                 </div>
             </div>
 
-            <div class="card-body p-0">
-                <div class="table-responsive">
-                    <table class="table table-striped table-bordered mb-0">
-                        <thead>
-                            <tr>
-                                <th class="text-center" style="width: 50px;">Chọn</th>
-                                <th class="text-center">STT</th>
-                                <th>Ảnh</th>
-                                <th>Tên Sản Phẩm</th>
-                                <th>Màu Sắc</th>
-                                <th>Kích Cỡ</th>
-                                <th>Trạng Thái</th>
-                                <th>Tình Trạng</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            <tr ng-repeat="detail in selectedProductDetails">
-                                <td class="text-center">
-                                    <input type="checkbox" class="form-check-input" ng-model="detail.selected" ng-change="toggleSelection(detail)">
-                                </td>
-                                <td class="text-center">{{$index + 1}}</td>
-                                <td>
-                                    <img ng-src="{{detail.imageUrl}}" alt="{{detail.productName}}" class="img-thumbnail" style="width: 50px; height: 50px;">
-                                </td>
-                                <td>{{detail.productName}}</td>
-                                <td>{{detail.color.name}}</td>
-                                <td>{{detail.size.name}}</td>
-                                <td>
-                                    <span class="badge" ng-class="{'badge-success': detail.status === 1, 'badge-danger': detail.status === 0}">
-                                        {{detail.status === 1 ? 'Còn Hàng' : 'Hết Hàng'}}
-                                    </span>
-                                </td>
-                                <td>{{detail.condition}}</td>
-                            </tr>
-                        </tbody>
-                    </table>
+            <!-- Product Details Card -->
+            <div class="card shadow-sm border-0" ng-if="selectedProductDetails.length > 0">
+                <div class="card-header bg-secondary text-white py-3">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <h5 class="mb-0">Chi Tiết Sản Phẩm</h5>
+                        <div class="form-check">
+                            <input type="checkbox" 
+                                   class="form-check-input" 
+                                   ng-model="selectAll"
+                                   ng-change="toggleAllSelection()">
+                            <label class="form-check-label text-white">Chọn tất cả</label>
+                        </div>
+                    </div>
+                </div>
+                <div class="card-body p-0">
+                    <div class="table-responsive">
+                        <table class="table table-hover mb-0">
+                            <thead class="bg-light">
+                                <tr>
+                                    <th width="50">Chọn</th>
+                                    <th>STT</th>
+                                    <th>Ảnh</th>
+                                    <th>Tên Sản Phẩm</th>
+                                    <th>Màu Sắc</th>
+                                    <th>Kích Cỡ</th>
+                                    <th>Trạng Thái</th>
+                                    <th>Tình Trạng</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr ng-repeat="detail in selectedProductDetails">
+                                    <td>
+                                        <input type="checkbox" 
+                                               class="form-check-input"
+                                               ng-model="detail.selected"
+                                               ng-change="toggleSelection(detail)"
+                                               ng-disabled="detail.status !== 1 || detail.promotion">
+                                    </td>
+                                    <td>{{$index + 1}}</td>
+                                    <td>
+                                        <img ng-src="{{detail.imageUrl}}" 
+                                             class="img-thumbnail" 
+                                             style="width: 50px; height: 50px;">
+                                    </td>
+                                    <td>{{detail.productName}}</td>
+                                    <td>{{detail.color.name}}</td>
+                                    <td>{{detail.size.name}}</td>
+                                    <td>
+                                        <span class="badge" 
+                                              ng-class="{'bg-success': detail.status === 1, 'bg-danger': detail.status === 0}">
+                                            {{detail.status === 1 ? 'Còn Hàng' : 'Hết Hàng'}}
+                                        </span>
+                                    </td>
+                                    <td>{{detail.condition}}</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
                 </div>
             </div>
         </div>

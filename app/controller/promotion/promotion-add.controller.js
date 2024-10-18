@@ -1,31 +1,38 @@
+// promotion-add.controller.js
 app.controller('AddPromotionController', function($scope, $http, $timeout) {
     // Constants
     const API_URL = "http://localhost:8080/api/v1";
     const ADMIN_API = "http://localhost:8080/api/admin";
 
     // Scope variables initialization
-    $scope.promotionData = {};
+    $scope.promotionData = {
+        code: '',
+        name: '',
+        discountPercentage: '',
+        startDate: null,
+        endDate: null
+    };
     $scope.validationErrors = [];
     $scope.isLoading = false;
     $scope.products = [];
     $scope.selectedProductDetails = [];
+    $scope.checkedProductDetails = [];
+    $scope.selectAll = false;
 
     // Configure toastr
     toastr.options = {
         "preventDuplicates": true,
         "closeButton": true,
         "progressBar": true,
-        "timeOut": "3000"
+        "timeOut": "3000",
+        "positionClass": "toast-top-right"
     };
 
     // API Service functions
     const apiService = {
         getProducts: function() {
             return $http.get(`${API_URL}/admin/products`)
-                .then(response => {
-                    console.log('API Response:', response.data); // Debug log
-                    return response.data.date; // Changed from data.data to data.date
-                })
+                .then(response => response.data.date)
                 .catch(error => {
                     console.error('Error fetching products:', error);
                     throw error;
@@ -34,7 +41,7 @@ app.controller('AddPromotionController', function($scope, $http, $timeout) {
 
         getProductDetails: function(productId) {
             return $http.get(`${API_URL}/admin/items?productId=${productId}`)
-                .then(response => response.data.date) // Changed from data.data to data.date
+                .then(response => response.data.date)
                 .catch(error => {
                     console.error('Error fetching product details:', error);
                     throw error;
@@ -48,22 +55,74 @@ app.controller('AddPromotionController', function($scope, $http, $timeout) {
                     console.error('Error creating promotion:', error);
                     throw error;
                 });
+        },
+
+        applyPromotionToProducts: function(promotionId, productDetailIds) {
+            return $http.post(`${API_URL}/promotion-products/apply`, 
+                productDetailIds,
+                { params: { promotionId: promotionId } }
+            )
+            .then(response => response.data)
+            .catch(error => {
+                console.error('Error applying promotion:', error);
+                throw error;
+            });
         }
     };
 
-    // Controller functions
+    // Checkbox handling functions
+    $scope.toggleAllSelection = function() {
+        const eligibleProducts = $scope.selectedProductDetails.filter(
+            detail => detail.status === 1 && !detail.promotion
+        );
+        
+        // Update all eligible products based on selectAll state
+        eligibleProducts.forEach(detail => {
+            detail.selected = $scope.selectAll;
+            updateCheckedList(detail);
+        });
+    };
+
+    $scope.toggleSelection = function(detail) {
+        if (detail.status === 1 && !detail.promotion) {
+            updateCheckedList(detail);
+            updateSelectAllState();
+        }
+    };
+
+    function updateCheckedList(detail) {
+        const index = $scope.checkedProductDetails.findIndex(d => d.id === detail.id);
+        if (detail.selected && index === -1) {
+            $scope.checkedProductDetails.push(detail);
+        } else if (!detail.selected && index !== -1) {
+            $scope.checkedProductDetails.splice(index, 1);
+        }
+    }
+
+    function updateSelectAllState() {
+        const eligibleProducts = $scope.selectedProductDetails.filter(
+            detail => detail.status === 1 && !detail.promotion
+        );
+        $scope.selectAll = eligibleProducts.length > 0 && 
+                          eligibleProducts.every(detail => detail.selected);
+    }
+
+    // Form handling functions
     $scope.fetchProducts = function() {
         $scope.isLoading = true;
         apiService.getProducts()
             .then(function(products) {
-                console.log('Fetched products:', products); // Debug log
                 $scope.products = products || [];
                 if (!$scope.products.length) {
                     toastr.warning("Không có sản phẩm nào");
                 }
             })
-            .catch(() => toastr.error("Lỗi khi tải danh sách sản phẩm"))
-            .finally(() => $scope.isLoading = false);
+            .catch(function() {
+                toastr.error("Lỗi khi tải danh sách sản phẩm");
+            })
+            .finally(function() {
+                $scope.isLoading = false;
+            });
     };
 
     $scope.selectProduct = function(product) {
@@ -74,46 +133,66 @@ app.controller('AddPromotionController', function($scope, $http, $timeout) {
 
         apiService.getProductDetails(product.id)
             .then(function(details) {
-                console.log('Product details:', details); // Debug log
                 $scope.selectedProductDetails = details.map(item => ({
                     ...item,
                     productName: product.name,
                     imageUrl: item.imageUrl || 'https://via.placeholder.com/50',
-                    condition: item.condition || 'Mới'
+                    condition: item.condition || 'Mới',
+                    selected: false
                 }));
+                // Reset selection states
+                $scope.selectAll = false;
+                $scope.checkedProductDetails = [];
             })
-            .catch(() => toastr.error("Lỗi khi tải chi tiết sản phẩm"));
+            .catch(function() {
+                toastr.error("Lỗi khi tải chi tiết sản phẩm");
+            });
     };
 
     $scope.validatePromotion = function() {
         $scope.validationErrors = [];
 
-        if (!$scope.promotionData.code?.trim()) {
-            $scope.validationErrors.push('Mã khuyến mãi không được để trống');
-        }
-
-        if (!$scope.promotionData.name?.trim()) {
-            $scope.validationErrors.push('Tên khuyến mãi không được để trống');
-        }
-
-        if (!$scope.promotionData.startDate) {
-            $scope.validationErrors.push('Ngày bắt đầu không được để trống');
-        }
-
-        if (!$scope.promotionData.endDate) {
-            $scope.validationErrors.push('Ngày kết thúc không được để trống');
-        }
-
-        if ($scope.promotionData.startDate && $scope.promotionData.endDate) {
-            if (new Date($scope.promotionData.startDate) >= new Date($scope.promotionData.endDate)) {
-                $scope.validationErrors.push('Ngày kết thúc phải sau ngày bắt đầu');
+        const validations = [
+            {
+                condition: !$scope.promotionData.code?.trim(),
+                message: 'Mã khuyến mãi không được để trống'
+            },
+            {
+                condition: !$scope.promotionData.name?.trim(),
+                message: 'Tên khuyến mãi không được để trống'
+            },
+            {
+                condition: !$scope.promotionData.startDate,
+                message: 'Ngày bắt đầu không được để trống'
+            },
+            {
+                condition: !$scope.promotionData.endDate,
+                message: 'Ngày kết thúc không được để trống'
+            },
+            {
+                condition: $scope.promotionData.startDate && 
+                          $scope.promotionData.endDate && 
+                          new Date($scope.promotionData.startDate) >= new Date($scope.promotionData.endDate),
+                message: 'Ngày kết thúc phải sau ngày bắt đầu'
+            },
+            {
+                condition: !$scope.promotionData.discountPercentage || 
+                          isNaN(parseFloat($scope.promotionData.discountPercentage)) || 
+                          parseFloat($scope.promotionData.discountPercentage) <= 0 || 
+                          parseFloat($scope.promotionData.discountPercentage) > 90,
+                message: 'Giá trị giảm giá phải là số dương và không vượt quá 90%'
+            },
+            {
+                condition: $scope.checkedProductDetails.length === 0,
+                message: 'Vui lòng chọn ít nhất một sản phẩm để áp dụng khuyến mãi'
             }
-        }
+        ];
 
-        const discountValue = parseFloat($scope.promotionData.discountPercentage);
-        if (!discountValue || isNaN(discountValue) || discountValue <= 0 || discountValue > 90) {
-            $scope.validationErrors.push('Giá trị giảm giá phải là số dương và không vượt quá 90%');
-        }
+        validations.forEach(validation => {
+            if (validation.condition) {
+                $scope.validationErrors.push(validation.message);
+            }
+        });
 
         return $scope.validationErrors.length === 0;
     };
@@ -130,24 +209,6 @@ app.controller('AddPromotionController', function($scope, $http, $timeout) {
         }
     }
 
-    $scope.savePromotion = function() {
-        if (!$scope.validatePromotion()) {
-            displayErrorsSequentially();
-            return;
-        }
-
-        $scope.isLoading = true;
-        const promotionData = preparePromotionData();
-
-        apiService.createPromotion(promotionData)
-            .then(function() {
-                toastr.success("Thêm khuyến mãi thành công!");
-                resetForm();
-            })
-            .catch(() => toastr.error("Lỗi khi thêm khuyến mãi"))
-            .finally(() => $scope.isLoading = false);
-    };
-
     function preparePromotionData() {
         const data = { ...$scope.promotionData };
         if (data.startDate) {
@@ -160,6 +221,7 @@ app.controller('AddPromotionController', function($scope, $http, $timeout) {
     }
 
     function resetForm() {
+        // Reset form data
         $scope.promotionData = {
             code: '',
             name: '',
@@ -167,15 +229,51 @@ app.controller('AddPromotionController', function($scope, $http, $timeout) {
             startDate: null,
             endDate: null
         };
-        $scope.selectedProductDetails = [];
+        
+        // Reset selection states
+        $scope.selectedProductDetails = $scope.selectedProductDetails.map(detail => ({
+            ...detail,
+            selected: false
+        }));
+        $scope.checkedProductDetails = [];
+        $scope.selectAll = false;
+        
+        // Reset validation
+        $scope.validationErrors = [];
     }
+
+    $scope.savePromotion = function() {
+        if (!$scope.validatePromotion()) {
+            displayErrorsSequentially();
+            return;
+        }
+
+        $scope.isLoading = true;
+        const promotionData = preparePromotionData();
+
+        apiService.createPromotion(promotionData)
+            .then(function(createdPromotion) {
+                const selectedIds = $scope.checkedProductDetails.map(detail => detail.id);
+                return apiService.applyPromotionToProducts(createdPromotion.id, selectedIds)
+                    .then(function() {
+                        toastr.success("Thêm và áp dụng khuyến mãi thành công!");
+                        resetForm();
+                        // Refresh product details to show updated promotion status
+                        if ($scope.selectedProductDetails.length > 0) {
+                            const currentProductId = $scope.selectedProductDetails[0].productId;
+                            $scope.selectProduct({ id: currentProductId });
+                        }
+                    });
+            })
+            .catch(function(error) {
+                console.error('Error in save process:', error);
+                toastr.error("Lỗi khi thêm khuyến mãi");
+            })
+            .finally(function() {
+                $scope.isLoading = false;
+            });
+    };
 
     // Initialize
     $scope.fetchProducts();
-
-    // Debug function
-    $scope.debug = function() {
-        console.log('Current products:', $scope.products);
-        console.log('Selected product details:', $scope.selectedProductDetails);
-    };
 });
