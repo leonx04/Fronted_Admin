@@ -1,4 +1,4 @@
-<<<<<<< HEAD
+
 app.controller('VouchersController', function ($scope, $http, $interval, $timeout) {
     // Khai báo các biến và hằng số
     const API_URL = "http://localhost:8080/api/admin/vouchers";
@@ -135,7 +135,11 @@ app.controller('VouchersController', function ($scope, $http, $interval, $timeou
 
         let dataToSend = prepareVoucherData();
 
-        $http({ method: method, url: url, data: dataToSend })
+        $http({ 
+            method: method, 
+            url: url, 
+            data: dataToSend 
+        })
             .then(function (response) {
                 $('#voucherModal').modal('hide');
                 $scope.loadData($scope.currentPage);
@@ -293,5 +297,3 @@ app.controller('VouchersController', function ($scope, $http, $interval, $timeou
         }
     });
 });
-=======
->>>>>>> 5e67c745a8ab34bec8365e8eeb8447961fcfb9b8

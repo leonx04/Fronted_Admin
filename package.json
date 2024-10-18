@@ -1,0 +1,12 @@
+{
+  "name": "fronted_admin",
+  "version": "1.0.0",
+  "description": "\"# Fronted_Admin\"",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "live-server --port=5500"
+  },
+  "author": "",
+  "license": "ISC"
+}
