@@ -103,17 +103,36 @@
                             </thead>
                             <tbody>
                                 <tr ng-repeat="voucher in vouchers">
-                                    <td>{{voucher.code}}</td>
-                                    <td>{{voucher.description}}</td>
-                                    <td>{{getVoucherTypeDisplay(voucher.voucherType)}}</td>
-                                    <td>{{getDiscountValueDisplay(voucher)}}</td>
-                                    <td>{{voucher.endDate | date:'dd/MM/yyyy HH:mm:ss'}}</td>
-                                    <td>
-                                        <span class="badge" ng-class="getStatusBadgeClass(voucher.status)">
-                                            {{getStatusDisplay(voucher.status)}}
-                                        </span>
+                                    <td class="align-middle">{{voucher.code}}</td>
+                                    <td class="align-middle">{{voucher.description}}</td>
+                                    <td class="align-middle">{{getVoucherTypeDisplay(voucher.voucherType)}}</td>
+                                    <td class="align-middle">{{getDiscountValueDisplay(voucher)}}</td>
+                                    <td class="align-middle">{{voucher.endDate | date:'dd/MM/yyyy HH:mm:ss'}}</td>
+                                    <td class="align-middle">
+                                        <div class="d-flex align-items-center">
+                                            <span class="badge badge-success mr-1" ng-if="voucher.status === 1">
+                                                <i class="fas fa-check-circle mr-1"></i>
+                                                Đang hoạt động
+                                            </span>
+                                            <span class="badge badge-danger mr-1" ng-if="voucher.status === 2">
+                                                <i class="fas fa-times-circle mr-1"></i>
+                                                Không hoạt động
+                                            </span>
+                                            <span class="badge badge-warning mr-1" ng-if="voucher.status === 3">
+                                                <i class="fas fa-hourglass-half mr-1"></i>
+                                                Sắp bắt đầu
+                                            </span>
+                                            <span class="badge badge-secondary mr-1" ng-if="voucher.status === 4">
+                                                <i class="fas fa-calendar-times mr-1"></i>
+                                                Đã kết thúc
+                                            </span>
+                                            <span class="badge badge-secondary mr-1" ng-if="voucher.status === 0">
+                                                <i class="fas fa-box-open mr-1"></i>
+                                                Đã hết
+                                            </span>
+                                        </div>
                                     </td>
-                                    <td>
+                                    <td class="align-middle">
                                         <button class="btn btn-sm btn-info" ng-click="viewVoucher(voucher.id)">
                                             <i class="fas fa-eye"></i>
                                         </button>

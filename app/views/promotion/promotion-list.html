@@ -79,17 +79,32 @@
                         </thead>
                         <tbody>
                             <tr ng-repeat="promotion in promotions">
-                                <td>{{promotion.code}}</td>
-                                <td>{{promotion.name}}</td>
-                                <td>{{promotion.discountPercentage}}%</td>
-                                <td>{{promotion.startDate | date:'dd/MM/yyyy HH:mm:ss'}}</td>
-                                <td>{{promotion.endDate | date:'dd/MM/yyyy HH:mm:ss'}}</td>
-                                <td>
-                                    <span class="badge" ng-class="getStatusBadgeClass(promotion.status)">
-                                        {{getStatusDisplay(promotion.status)}}
-                                    </span>
+                                <td class="align-middle">{{promotion.code}}</td>
+                                <td class="align-middle">{{promotion.name}}</td>
+                                <td class="align-middle">{{promotion.discountPercentage}}%</td>
+                                <td class="align-middle">{{promotion.startDate | date:'dd/MM/yyyy HH:mm:ss'}}</td>
+                                <td class="align-middle">{{promotion.endDate | date:'dd/MM/yyyy HH:mm:ss'}}</td>
+                                <td class="align-middle">
+                                    <div class="d-flex align-items-center">
+                                        <span class="badge badge-success mr-1" ng-if="promotion.status === 1">
+                                            <i class="fas fa-check-circle mr-1"></i>
+                                            Đang hoạt động
+                                        </span>
+                                        <span class="badge badge-danger mr-1" ng-if="promotion.status === 2">
+                                            <i class="fas fa-times-circle mr-1"></i>
+                                            Không hoạt động
+                                        </span>
+                                        <span class="badge badge-warning mr-1" ng-if="promotion.status === 3">
+                                            <i class="fas fa-hourglass-half mr-1"></i>
+                                            Sắp bắt đầu
+                                        </span>
+                                        <span class="badge badge-secondary mr-1" ng-if="promotion.status === 4">
+                                            <i class="fas fa-calendar-times mr-1"></i>
+                                            Đã kết thúc
+                                        </span>
+                                    </div>
                                 </td>
-                                <td>
+                                <td  class="align-middle">
                                     <button class="btn btn-sm btn-primary mr-1" ng-click="editPromotion(promotion.id)"
                                         ng-if="promotion.status !== 2"><i class="fas fa-edit"></i></button>
                                     <button class="btn btn-sm btn-danger"

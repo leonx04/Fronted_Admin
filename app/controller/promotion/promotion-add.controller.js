@@ -1,155 +1,242 @@
-// promotion-add.controller.js
+// Định nghĩa các hằng số API
+const API_CONSTANTS = {
+    BASE_URL: 'http://localhost:8080',
+    get API_URL() { return `${this.BASE_URL}/api/v1`; },
+    get ADMIN_API() { return `${this.BASE_URL}/api/admin`; }
+};
+
+/**
+ * Controller quản lý thêm mới khuyến mãi
+ */
 app.controller('AddPromotionController', function($scope, $http, $timeout) {
-    // Constants
-    const API_URL = "http://localhost:8080/api/v1";
-    const ADMIN_API = "http://localhost:8080/api/admin";
-
-    // Scope variables initialization
-    $scope.promotionData = {
-        code: '',
-        name: '',
-        discountPercentage: '',
-        startDate: null,
-        endDate: null
-    };
-    $scope.validationErrors = [];
-    $scope.isLoading = false;
-    $scope.products = [];
-    $scope.selectedProductDetails = [];
-    $scope.checkedProductDetails = [];
-    $scope.selectAll = false;
-
-    // Configure toastr
-    toastr.options = {
-        "preventDuplicates": true,
-        "closeButton": true,
-        "progressBar": true,
-        "timeOut": "3000",
-        "positionClass": "toast-top-right"
+    // ===== Khởi tạo các biến scope =====
+    const initScopeVariables = () => {
+        // Dữ liệu form khuyến mãi
+        $scope.promotionData = {
+            code: '',
+            name: '',
+            discountPercentage: '',
+            startDate: null,
+            endDate: null
+        };
+        
+        // Các biến quản lý trạng thái
+        $scope.validationErrors = [];
+        $scope.isLoading = false;
+        $scope.products = [];
+        $scope.selectedProductDetails = [];
+        $scope.checkedProductDetails = [];
+        $scope.selectAll = false;
+        $scope.lastCheckedIndex = -1; // Index item được chọn cuối cùng cho tính năng shift+click
     };
 
-    // API Service functions
+    // ===== Các service gọi API =====
     const apiService = {
-        getProducts: function() {
-            return $http.get(`${API_URL}/admin/products`)
+        /**
+         * Lấy danh sách sản phẩm
+         */
+        getProducts: () => {
+            return $http.get(`${API_CONSTANTS.API_URL}/admin/products`)
                 .then(response => response.data.date)
                 .catch(error => {
-                    console.error('Error fetching products:', error);
+                    console.error('Lỗi khi lấy danh sách sản phẩm:', error);
                     throw error;
                 });
         },
 
-        getProductDetails: function(productId) {
-            return $http.get(`${API_URL}/admin/items?productId=${productId}`)
+        /**
+         * Lấy chi tiết sản phẩm theo ID
+         */
+        getProductDetails: (productId) => {
+            return $http.get(`${API_CONSTANTS.API_URL}/admin/items/product/${productId}`)
                 .then(response => response.data.date)
                 .catch(error => {
-                    console.error('Error fetching product details:', error);
+                    console.error('Lỗi khi lấy chi tiết sản phẩm:', error);
                     throw error;
                 });
         },
 
-        createPromotion: function(promotionData) {
-            return $http.post(`${ADMIN_API}/promotions`, promotionData)
+        /**
+         * Tạo mới khuyến mãi
+         */
+        createPromotion: (promotionData) => {
+            return $http.post(`${API_CONSTANTS.ADMIN_API}/promotions`, promotionData)
                 .then(response => response.data)
                 .catch(error => {
-                    console.error('Error creating promotion:', error);
+                    console.error('Lỗi khi tạo khuyến mãi:', error);
                     throw error;
                 });
         },
 
-        applyPromotionToProducts: function(promotionId, productDetailIds) {
-            return $http.post(`${API_URL}/promotion-products/apply`, 
+        /**
+         * Áp dụng khuyến mãi cho danh sách sản phẩm
+         */
+        applyPromotionToProducts: (promotionId, productDetailIds) => {
+            return $http.post(
+                `${API_CONSTANTS.ADMIN_API}/promotion-products/apply`,
                 productDetailIds,
                 { params: { promotionId: promotionId } }
             )
             .then(response => response.data)
             .catch(error => {
-                console.error('Error applying promotion:', error);
+                console.error('Lỗi khi áp dụng khuyến mãi:', error);
                 throw error;
             });
         }
     };
 
-    // Checkbox handling functions
-    $scope.toggleAllSelection = function() {
+    // ===== Các hàm xử lý chọn sản phẩm =====
+    /**
+     * Xử lý toggle chọn một sản phẩm
+     * Hỗ trợ chọn nhiều bằng shift+click
+     */
+    $scope.toggleSelection = (detail, index, $event) => {
+        if (detail.status === 0 || detail.promotion) {
+            detail.selected = false;
+            return;
+        }
+    
+        detail.selected = !detail.selected;
+        $scope.lastCheckedIndex = index;
+        updateSelectionStates();
+    };
+    
+
+    /**
+     * Chọn/bỏ chọn tất cả sản phẩm hợp lệ
+     */
+    $scope.toggleAllSelection = () => {
         const eligibleProducts = $scope.selectedProductDetails.filter(
             detail => detail.status === 1 && !detail.promotion
         );
-        
-        // Update all eligible products based on selectAll state
+
         eligibleProducts.forEach(detail => {
             detail.selected = $scope.selectAll;
-            updateCheckedList(detail);
         });
+
+        $scope.lastCheckedIndex = -1;
+        $scope.updateCheckedList();
     };
 
-    $scope.toggleSelection = function(detail) {
-        if (detail.status === 1 && !detail.promotion) {
-            updateCheckedList(detail);
-            updateSelectAllState();
-        }
+    /**
+     * Chọn sản phẩm theo trạng thái
+     */
+    $scope.selectByStatus = (status) => {
+        $scope.selectedProductDetails.forEach(detail => {
+            if (detail.status === status && !detail.promotion) {
+                detail.selected = true;
+            }
+        });
+        
+        updateSelectionStates();
     };
 
-    function updateCheckedList(detail) {
-        const index = $scope.checkedProductDetails.findIndex(d => d.id === detail.id);
-        if (detail.selected && index === -1) {
-            $scope.checkedProductDetails.push(detail);
-        } else if (!detail.selected && index !== -1) {
-            $scope.checkedProductDetails.splice(index, 1);
-        }
-    }
+    /**
+     * Bỏ chọn tất cả sản phẩm
+     */
+    $scope.deselectAll = () => {
+        $scope.selectedProductDetails.forEach(detail => {
+            detail.selected = false;
+        });
+        
+        $scope.selectAll = false;
+        $scope.lastCheckedIndex = -1;
+        $scope.updateCheckedList();
+    };
 
-    function updateSelectAllState() {
+    /**
+     * Cập nhật danh sách sản phẩm đã chọn
+     */
+    $scope.updateCheckedList = () => {
+        $scope.checkedProductDetails = $scope.selectedProductDetails.filter(
+            detail => detail.selected && detail.status === 1 && !detail.promotion
+        );
+    };
+
+    /**
+     * Cập nhật trạng thái chọn tất cả
+     */
+    $scope.updateSelectAllState = () => {
         const eligibleProducts = $scope.selectedProductDetails.filter(
             detail => detail.status === 1 && !detail.promotion
         );
-        $scope.selectAll = eligibleProducts.length > 0 && 
-                          eligibleProducts.every(detail => detail.selected);
-    }
 
-    // Form handling functions
-    $scope.fetchProducts = function() {
+        $scope.selectAll = eligibleProducts.length > 0 && 
+            eligibleProducts.every(detail => detail.selected);
+    };
+
+    /**
+     * Cập nhật các trạng thái liên quan đến việc chọn sản phẩm
+     */
+    const updateSelectionStates = () => {
+        $scope.updateCheckedList();
+        $scope.updateSelectAllState();
+    };
+
+    // ===== Các hàm xử lý sản phẩm =====
+    /**
+     * Lấy danh sách sản phẩm từ API
+     */
+    $scope.fetchProducts = () => {
         $scope.isLoading = true;
         apiService.getProducts()
-            .then(function(products) {
+            .then(products => {
                 $scope.products = products || [];
                 if (!$scope.products.length) {
                     toastr.warning("Không có sản phẩm nào");
                 }
             })
-            .catch(function() {
+            .catch(() => {
                 toastr.error("Lỗi khi tải danh sách sản phẩm");
             })
-            .finally(function() {
+            .finally(() => {
                 $scope.isLoading = false;
             });
     };
 
-    $scope.selectProduct = function(product) {
-        if (!product || !product.id) {
-            console.error('Invalid product:', product);
+    /**
+     * Chọn sản phẩm để xem chi tiết
+     */
+    $scope.selectProduct = (product) => {
+        if (!product?.id) {
+            console.error('Sản phẩm không hợp lệ:', product);
             return;
         }
+        $scope.loadProductDetails(product.id);
+    };
 
-        apiService.getProductDetails(product.id)
-            .then(function(details) {
-                $scope.selectedProductDetails = details.map(item => ({
-                    ...item,
-                    productName: product.name,
-                    imageUrl: item.imageUrl || 'https://via.placeholder.com/50',
-                    condition: item.condition || 'Mới',
-                    selected: false
-                }));
-                // Reset selection states
-                $scope.selectAll = false;
-                $scope.checkedProductDetails = [];
+    /**
+     * Tải chi tiết sản phẩm theo ID
+     */
+    $scope.loadProductDetails = (productId) => {
+        apiService.getProductDetails(productId)
+            .then(details => {
+                // Tích hợp các sản phẩm chi tiết đã chọn từ trước
+                details.forEach(detail => {
+                    // Kiểm tra xem sản phẩm chi tiết này đã được chọn từ trước chưa
+                    const isAlreadySelected = $scope.selectedProductDetails.some(
+                        d => d.id === detail.id
+                    );
+                    if (!isAlreadySelected) {
+                        detail.selected = false;
+                        detail.productName = $scope.products.find(p => p.id === productId)?.name;
+                        detail.imageUrl = detail.imageUrl || 'https://via.placeholder.com/50';
+                        $scope.selectedProductDetails.push(detail);
+                    }
+                });
+                resetSelectionStates();
             })
-            .catch(function() {
+            .catch(() => {
                 toastr.error("Lỗi khi tải chi tiết sản phẩm");
             });
     };
+    
 
-    $scope.validatePromotion = function() {
+    // ===== Các hàm xử lý form và validate =====
+    /**
+     * Kiểm tra dữ liệu khuyến mãi
+     */
+    $scope.validatePromotion = () => {
         $scope.validationErrors = [];
 
         const validations = [
@@ -176,10 +263,7 @@ app.controller('AddPromotionController', function($scope, $http, $timeout) {
                 message: 'Ngày kết thúc phải sau ngày bắt đầu'
             },
             {
-                condition: !$scope.promotionData.discountPercentage || 
-                          isNaN(parseFloat($scope.promotionData.discountPercentage)) || 
-                          parseFloat($scope.promotionData.discountPercentage) <= 0 || 
-                          parseFloat($scope.promotionData.discountPercentage) > 90,
+                condition: !isValidDiscountPercentage($scope.promotionData.discountPercentage),
                 message: 'Giá trị giảm giá phải là số dương và không vượt quá 90%'
             },
             {
@@ -197,19 +281,33 @@ app.controller('AddPromotionController', function($scope, $http, $timeout) {
         return $scope.validationErrors.length === 0;
     };
 
-    function displayErrorsSequentially(index = 0) {
+    /**
+     * Kiểm tra giá trị phần trăm giảm giá
+     */
+    const isValidDiscountPercentage = (value) => {
+        const discount = parseFloat(value);
+        return !isNaN(discount) && discount > 0 && discount <= 90;
+    };
+
+    /**
+     * Hiển thị lỗi tuần tự
+     */
+    const displayErrorsSequentially = (index = 0) => {
         if (index < $scope.validationErrors.length) {
             toastr.error($scope.validationErrors[index], '', {
-                onHidden: function() {
-                    $timeout(function() {
+                onHidden: () => {
+                    $timeout(() => {
                         displayErrorsSequentially(index + 1);
                     }, 300);
                 }
             });
         }
-    }
+    };
 
-    function preparePromotionData() {
+    /**
+     * Chuẩn bị dữ liệu khuyến mãi trước khi gửi lên server
+     */
+    const preparePromotionData = () => {
         const data = { ...$scope.promotionData };
         if (data.startDate) {
             data.startDate = new Date(data.startDate).toISOString();
@@ -218,10 +316,12 @@ app.controller('AddPromotionController', function($scope, $http, $timeout) {
             data.endDate = new Date(data.endDate).toISOString();
         }
         return data;
-    }
+    };
 
-    function resetForm() {
-        // Reset form data
+    /**
+     * Reset form và trạng thái chọn
+     */
+    const resetForm = () => {
         $scope.promotionData = {
             code: '',
             name: '',
@@ -229,51 +329,69 @@ app.controller('AddPromotionController', function($scope, $http, $timeout) {
             startDate: null,
             endDate: null
         };
-        
-        // Reset selection states
+        resetSelectionStates();
+    };
+
+    /**
+     * Reset các trạng thái liên quan đến chọn sản phẩm
+     */
+    const resetSelectionStates = () => {
         $scope.selectedProductDetails = $scope.selectedProductDetails.map(detail => ({
             ...detail,
             selected: false
         }));
         $scope.checkedProductDetails = [];
         $scope.selectAll = false;
-        
-        // Reset validation
+        $scope.lastCheckedIndex = -1;
         $scope.validationErrors = [];
-    }
+    };
 
-    $scope.savePromotion = function() {
+    /**
+     * Lưu khuyến mãi
+     */
+    $scope.savePromotion = () => {
         if (!$scope.validatePromotion()) {
             displayErrorsSequentially();
             return;
         }
-
+    
         $scope.isLoading = true;
         const promotionData = preparePromotionData();
-
+    
+        // Tạo khuyến mãi và áp dụng cho tất cả sản phẩm chi tiết đã chọn
         apiService.createPromotion(promotionData)
-            .then(function(createdPromotion) {
+            .then(createdPromotion => {
                 const selectedIds = $scope.checkedProductDetails.map(detail => detail.id);
-                return apiService.applyPromotionToProducts(createdPromotion.id, selectedIds)
-                    .then(function() {
-                        toastr.success("Thêm và áp dụng khuyến mãi thành công!");
-                        resetForm();
-                        // Refresh product details to show updated promotion status
-                        if ($scope.selectedProductDetails.length > 0) {
-                            const currentProductId = $scope.selectedProductDetails[0].productId;
-                            $scope.selectProduct({ id: currentProductId });
-                        }
-                    });
+                if (selectedIds.length > 0) {
+                    return apiService.applyPromotionToProducts(createdPromotion.id, selectedIds)
+                        .then(() => {
+                            toastr.success("Thêm và áp dụng khuyến mãi thành công!");
+                            resetForm();
+                            $scope.refreshCurrentProduct();
+                        });
+                } else {
+                    toastr.warning("Chưa có sản phẩm chi tiết nào được chọn để áp dụng khuyến mãi.");
+                }
             })
-            .catch(function(error) {
-                console.error('Error in save process:', error);
+            .catch(() => {
                 toastr.error("Lỗi khi thêm khuyến mãi");
             })
-            .finally(function() {
+            .finally(() => {
                 $scope.isLoading = false;
             });
     };
+    
 
-    // Initialize
-    $scope.fetchProducts();
+    /**
+     * Làm mới danh sách sản phẩm hiện tại
+     */
+    $scope.refreshCurrentProduct = () => {
+        $scope.fetchProducts();
+    };
+
+    // Khởi tạo controller
+    (() => {
+        initScopeVariables();
+        $scope.fetchProducts();
+    })();
 });
