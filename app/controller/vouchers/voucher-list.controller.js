@@ -170,18 +170,24 @@ app.controller('VouchersController', function ($scope, $http, $interval, $timeou
     // Hàm tạo HTML cho chi tiết voucher
     function generateVoucherHtml(voucher) {
         return `
-            <p><strong>Mã:</strong> ${voucher.code}</p>
-            <p><strong>Mô tả:</strong> ${voucher.description}</p>
-            <p><strong>Loại:</strong> ${$scope.getVoucherTypeDisplay(voucher.voucherType)}</p>
-            <p><strong>Giá trị giảm:</strong> ${$scope.getDiscountValueDisplay(voucher)}</p>
-            <p><strong>Ngày bắt đầu:</strong> ${new Date(voucher.startDate).toLocaleString()}</p>
-            <p><strong>Ngày kết thúc:</strong> ${new Date(voucher.endDate).toLocaleString()}</p>
-            <p><strong>Giá trị đơn hàng tối thiểu:</strong> ${$scope.formatCurrency(voucher.minimumOrderValue)}</p>
-            <p><strong>Số tiền giảm tối đa:</strong> ${$scope.formatCurrency(voucher.maximumDiscountAmount)}</p>
-            <p><strong>Số lượng:</strong> ${voucher.quantity}</p>
-            <p><strong>Trạng thái:</strong> <span class="badge ${$scope.getStatusBadgeClass(voucher.status)}">${$scope.getStatusDisplay(voucher.status)}</span></p>
-        `;
+        <p><strong>Mã:</strong> ${voucher.code}</p>
+        <p><strong>Mô tả:</strong> ${voucher.description}</p>
+        <p><strong>Loại:</strong> ${$scope.getVoucherTypeDisplay(voucher.voucherType)}</p>
+        <p><strong>Giá trị giảm:</strong> ${$scope.getDiscountValueDisplay(voucher)}</p>
+        <p><strong>Ngày bắt đầu:</strong> ${new Date(voucher.startDate).toLocaleString()}</p>
+        <p><strong>Ngày kết thúc:</strong> ${new Date(voucher.endDate).toLocaleString()}</p>
+        <p><strong>Giá trị đơn hàng tối thiểu:</strong> ${$scope.formatCurrency(voucher.minimumOrderValue)}</p>
+        <p><strong>Số tiền giảm tối đa:</strong> ${$scope.formatCurrency(voucher.maximumDiscountAmount)}</p>
+        <p><strong>Số lượng:</strong> ${voucher.quantity}</p>
+        <p><strong>Trạng thái:</strong> 
+            <span class="badge ${$scope.getStatusBadgeClass(voucher.status)}">
+                <i class="${$scope.getStatusIconClass(voucher.status)} mr-1"></i>
+                ${$scope.getStatusDisplay(voucher.status)}
+            </span>
+        </p>
+    `;
     }
+
 
     // Hàm mở modal xác nhận xóa
     $scope.openDeleteConfirmModal = function (id) {
@@ -241,9 +247,9 @@ app.controller('VouchersController', function ($scope, $http, $interval, $timeou
     $scope.getStatusDisplay = function (status) {
         const statusMap = {
             0: "Đã hết",
-            1: "Hoạt động",
+            1: "Đang hoạt động",
             2: "Không hoạt động",
-            3: "Chờ hoạt động",
+            3: "Sắp bắt đầu",
             4: "Đã kết thúc"
         };
         return statusMap[status] || "Không xác định";
@@ -252,14 +258,27 @@ app.controller('VouchersController', function ($scope, $http, $interval, $timeou
     // Hàm lấy class cho badge trạng thái
     $scope.getStatusBadgeClass = function (status) {
         const classMap = {
-            0: "badge-secondary",
+            0: "badge-info",
             1: "badge-success",
-            2: "badge-info",
+            2: "badge-danger",
             3: "badge-warning",
-            4: "badge-danger"
+            4: "badge-secondary"
         };
         return classMap[status] || "badge-warning";
     };
+
+    // Hàm lấy class cho icon trạng thái
+    $scope.getStatusIconClass = function (status) {
+        const iconMap = {
+            0: "fas fa-box-open",          // Đã hết
+            1: "fas fa-check-circle",      // Đang hoạt động
+            2: "fas fa-times-circle",      // Không hoạt động
+            3: "fas fa-hourglass-half",   // Sắp bắt đầu
+            4: "fas fa-calendar-times"     // Đã kết thúc
+        };
+        return iconMap[status] || "fas fa-question-circle";
+    };
+
 
     // Hàm định dạng tiền tệ
     $scope.formatCurrency = function (amount) {

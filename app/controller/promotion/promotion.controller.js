@@ -190,29 +190,6 @@ app.controller('PromotionsController', function ($scope, $http, $interval, $time
             .finally(() => $scope.isLoading = false);
     };
 
-
-    // Hàm hỗ trợ: Hiển thị trạng thái khuyến mãi
-    $scope.getStatusDisplay = function (status) {
-        const statusMap = {
-            1: "Hoạt động",
-            2: "Không hoạt động",
-            3: "Chờ hoạt động",
-            4: "Đã kết thúc"
-        };
-        return statusMap[status] || "Không xác định";
-    };
-
-    // Hàm hỗ trợ: Lấy class cho badge trạng thái
-    $scope.getStatusBadgeClass = function (status) {
-        const classMap = {
-            1: "badge-success",
-            2: "badge-info",
-            3: "badge-warning",
-            4: "badge-danger"
-        };
-        return classMap[status] || "badge-secondary";
-    };
-
     // Hàm tạo mảng số trang để hiển thị
     $scope.getPageRange = function () {
         let start = Math.max(1, $scope.currentPage - 1);
