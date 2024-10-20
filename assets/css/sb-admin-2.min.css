@@ -12635,3 +12635,20 @@ body.sidebar-toggled footer.sticky-footer {
     0% { transform: rotate(0deg); }
     100% { transform: rotate(360deg); }
 }
+/* Giá gốc, bị gạch giữa và giảm độ nổi bật */
+.discounted-price {
+    color: #999;                    /* Màu xám nhẹ để không quá nổi bật */
+    font-size: 1.1em;               /* Kích thước vừa phải */
+    text-decoration: line-through;  /* Gạch giữa */
+    font-weight: normal;            /* Trọng lượng font nhẹ hơn */
+    opacity: 0.7;                   /* Giảm độ đậm để làm nổi bật giá khuyến mãi */
+}
+
+/* Giá khuyến mãi, nổi bật hơn */
+.promotion-price {
+    color: #28a745;                 /* Màu xanh lá, biểu thị giá khuyến mãi tốt */
+    font-size: 1.2em;               /* Kích thước lớn hơn giá gốc một chút */
+    font-weight: bold;              /* Đậm hơn để nổi bật */
+    margin-left: 10px;              /* Khoảng cách giữa giá gốc và giá khuyến mãi */
+    display: inline-block;          /* Hiển thị ngang cùng giá gốc */
+}

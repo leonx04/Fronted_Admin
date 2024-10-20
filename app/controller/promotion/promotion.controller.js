@@ -2,6 +2,7 @@
 app.controller('PromotionsController', function ($scope, $http, $interval, $timeout) {
     // Khai báo các biến và hằng số
     const API_URL = "http://localhost:8080/api/admin/promotions";
+    const API_PRODUCT = "http://localhost:8080/api/v1/admin";
     const PAGE_SIZE = 3;
     const AUTO_UPDATE_INTERVAL = 3000; // 3 giây
 
@@ -16,6 +17,7 @@ app.controller('PromotionsController', function ($scope, $http, $interval, $time
     $scope.totalItems = 0;
     $scope.totalPages = 0;
     $scope.validationErrors = [];
+    $scope.promotionProducts = [];
 
     // Biến local
     let currentPromotionId = null;
@@ -227,6 +229,29 @@ app.controller('PromotionsController', function ($scope, $http, $interval, $time
         }
         return dataToSend;
     }
+
+    // Hàm định dạng tiền tệ
+    $scope.formatCurrency = function (amount) {
+        return new Intl.NumberFormat("vi-VN", {
+            style: "currency",
+            currency: "VND",
+            minimumFractionDigits: 0,
+            maximumFractionDigits: 0,
+        }).format(amount);
+    };
+
+    $scope.viewPromotionDetails = function(promotionId) {
+        $scope.isLoading = true;
+        $http.get(`${API_PRODUCT}/items/promotion/${promotionId}`)
+            .then(function(response) {
+                $scope.promotionProducts = response.data.date || []; // Đảm bảo là một mảng
+                $scope.promotionDetails = $scope.promotionProducts.length > 0 ? $scope.promotionProducts[0].promotion : null;
+                $scope.hasProducts = $scope.promotionProducts.length > 0;
+                $('#promotionDetailsModal').modal('show');
+            })
+            .catch(handleError("Lỗi khi lấy chi tiết khuyến mãi"))
+            .finally(() => $scope.isLoading = false);
+    };
 
     // Hàm bắt đầu tự động cập nhật
     function startAutoUpdate() {

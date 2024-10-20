@@ -104,11 +104,14 @@
                                         </span>
                                     </div>
                                 </td>
-                                <td  class="align-middle">
+                                <td class="align-middle">
+                                    <button class="btn btn-info btn-sm" ng-click="viewPromotionDetails(promotion.id)">
+                                        <i class="fas fa-eye"></i>
+                                    </button>
                                     <button class="btn btn-sm btn-primary mr-1" ng-click="editPromotion(promotion.id)"
-                                        ng-if="promotion.status !== 2"><i class="fas fa-edit"></i></button>
+                                        ng-if="promotion.status !== 2 && promotion.status !== 4 && promotion.status !== 3 "><i class="fas fa-edit"></i></button>
                                     <button class="btn btn-sm btn-danger"
-                                        ng-click="openDeleteConfirmModal(promotion.id)"><i
+                                        ng-click="openDeleteConfirmModal(promotion.id)" ng-if="promotion.status !== 2 && promotion.status !== 4 && promotion.status !== 3 && promotion.status !== 1"><i
                                             class="fas fa-trash"></i></button>
                                 </td>
                             </tr>
@@ -241,4 +244,76 @@
             </div>
         </div>
     </div>
+
+    <div id="promotionDetailsModal" class="modal fade" tabindex="-1" role="dialog"
+        aria-labelledby="promotionDetailsModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-lg" role="document">
+            <div class="modal-content">
+                <div class="modal-header bg-primary text-white">
+                    <h5 class="modal-title" id="promotionDetailsModalLabel">
+                        <i class="fas fa-info-circle mr-2"></i>Chi tiết khuyến mãi
+                    </h5>
+                    <button type="button" class="close text-white" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    <div ng-if="promotionDetails">
+                        <h6><i class="fas fa-tag mr-2"></i>Thông tin khuyến mãi</h6>
+                        <p><strong>Mã khuyến mãi:</strong> {{promotionDetails.code}}</p>
+                        <p><strong>Tên khuyến mãi:</strong> {{promotionDetails.name}}</p>
+                        <p><strong>Giảm giá:</strong> {{promotionDetails.discountPercentage}}%</p>
+                        <p><strong>Ngày bắt đầu:</strong> {{promotionDetails.startDate | date:'dd/MM/yyyy HH:mm:ss'}}
+                        </p>
+                        <p><strong>Ngày kết thúc:</strong> {{promotionDetails.endDate | date:'dd/MM/yyyy HH:mm:ss'}}</p>
+                    </div>
+
+                    <h6 class="mt-4"><i class="fas fa-box-open mr-2"></i>Sản phẩm áp dụng</h6>
+                    <div ng-if="hasProducts">
+                        <table class="table table-striped">
+                            <thead>
+                                <tr>
+                                    <th>Tên sản phẩm</th>
+                                    <th>Màu sắc</th>
+                                    <th>Kích thước</th>
+                                    <th>Giá gốc</th>
+                                    <th>Giá khuyến mãi</th>
+                                    <th>Trạng thái</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr ng-repeat="product in promotionProducts">
+                                    <td>{{product.product.name}}</td>
+                                    <td>{{product.color.name}}</td>
+                                    <td>{{product.size.name}}</td>
+                                    <td class="discounted-price">{{formatCurrency(product.price)}}</td>
+                                    <td class="promotion-price">{{formatCurrency(product.price * (1 - promotionDetails.discountPercentage/100))}}</td>
+                                    <td>
+                                        <span class="badge badge-success mr-1" ng-if="product.product.status === 1">
+                                            <i class="fas fa-check-circle mr-1"></i>
+                                            Còn hàng
+                                        </span>
+                                        <span class="badge badge-danger mr-1" ng-if="product.product.status === 0">
+                                            <i class="fas fa-times-circle mr-1"></i>
+                                            Hết hàng
+                                        </span>
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                    <div ng-if="!hasProducts" class="alert alert-info">
+                        <i class="fas fa-exclamation-circle mr-2"></i>Chưa có sản phẩm chi tiết nào được áp dụng cho
+                        khuyến mãi này.
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-dismiss="modal">
+                        <i class="fas fa-times mr-2"></i>Đóng
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
 </div>
