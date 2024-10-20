@@ -246,8 +246,9 @@
   }
   
     </style>
+    
   </head>
-  <body>
+  <body ng-controller="OrdersListController">
     <div class="container my-5">
       <div class="d-flex align-items-center mb-4">
         <div>
@@ -273,15 +274,14 @@
           <div class="row mb-4">
             <div class="col-md-6 mb-3 mb-md-0">
               <h5 class="mb-3">Thông tin hóa đơn</h5>
-              <div><strong>Hóa đơn #: 123</strong></div>
-              <div>Ngày tạo: 01/10/2024</div>
-              <div>Thời hạn: 15/10/2024</div>
+              <div><strong>Hóa đơn:{{selectedOrderDetails.code}}</strong></div>
+              <div>Ngày tạo:{{selectedOrderDetails.createdDate | date:'dd/MM/yyyy'}}</div>
+              <!-- <div>Thời hạn: 15/10/2024</div> -->
             </div>
             <div class="col-md-6">
               <h5 class="mb-3">Thông tin khách hàng</h5>
-              <div><strong>Khách hàng: Nguyễn Văn A</strong></div>
-              <div>Địa chỉ: 456 Phố Khách</div>
-              <div>Thành phố: Hà Nội</div>
+              <div><strong>Khách hàng:  {{selectedOrderDetails.recipientName}}</strong></div>
+              <div>Địa chỉ:  {{selectedOrderDetails.detailAddress}}</div>
             </div>
           </div>
 
@@ -290,10 +290,10 @@
               <h5 class="mb-3">Thanh toán</h5>
               <div class="mb-2">
                 <strong>Hình thức thanh toán:</strong>
-                <span class="badge bg-primary">Thanh toán online trên web</span>
+                <span class="badge bg-primary"> {{selectedOrderDetails.orderType}}</span>
               </div>
-              <div><strong>Phương thức thanh toán:</strong> Thẻ tín dụng</div>
-              <div>Ngân hàng ABC: 1234 5678 9012 3456</div>
+              <div><strong>Phương thức thanh toán:</strong> {{selectedOrderDetails.orderPayment}}</div>
+              <!-- <div>Ngân hàng ABC: 1234 5678 9012 3456</div> -->
             </div>
           </div>
 
@@ -308,41 +308,19 @@
                 </tr>
               </thead>
               <tbody>
-                <tr>
+                <tr ng-repeat="item in selectedOrderDetails.products">
                   <td class="product-cell">
                     <div class="product-info">
-                      <img src="" class="product-image" />
                       <span class="product-name"
-                        >Giày Thể Thao Nike Air Max</span
+                        >{{item.productName}}</span
                       >
                     </div>
                   </td>
-                  <td data-label="Số lượng">2</td>
-                  <td data-label="Đơn giá">1,500,000 VND</td>
-                  <td data-label="Thành tiền">3,000,000 VND</td>
+                  <td data-label="Số lượng">{{item.quantity}}</td>
+                  <td data-label="Đơn giá">{{formatCurrency(item.price)}}</td>
+                  <td data-label="Thành tiền">{{formatCurrency(item.price * item.quantity)}}</td>
                 </tr>
-                <tr>
-                  <td class="product-cell">
-                    <div class="product-info">
-                      <img src="" class="product-image" />
-                      <span class="product-name">Áo thun Adidas Originals</span>
-                    </div>
-                  </td>
-                  <td data-label="Số lượng">1</td>
-                  <td data-label="Đơn giá">500,000 VND</td>
-                  <td data-label="Thành tiền">500,000 VND</td>
-                </tr>
-                <tr>
-                  <td class="product-cell">
-                    <div class="product-info">
-                      <img src="" class="product-image" />
-                      <span class="product-name">Quần short Puma Sport</span>
-                    </div>
-                  </td>
-                  <td data-label="Số lượng">1</td>
-                  <td data-label="Đơn giá">400,000 VND</td>
-                  <td data-label="Thành tiền">400,000 VND</td>
-                </tr>
+                 
               </tbody>
             </table>
           </div>
@@ -350,15 +328,15 @@
           <div class="invoice-totals">
             <div class="row">
               <span class="label">Phí Vận Chuyển</span>
-              <span class="value">50,000 VND</span>
+              <span class="value">{{formatCurrency(selectedOrderDetails.shippingCost)}}</span>
             </div>
             <div class="row">
               <span class="label">Voucher</span>
-              <span class="value">150,000 VND</span>
+              <span class="value">{{formatCurrency(selectedOrderDetails.voucherCode)}}</span>
             </div>
             <div class="row">
               <span class="label total">Tổng cộng</span>
-              <span class="value total">3,950,000 VND</span>
+              <span class="value total">{{formatCurrency(selectedOrderDetails.totalAmount)}}</span>
             </div>
           </div>
           
