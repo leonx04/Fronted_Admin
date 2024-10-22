@@ -1,6 +1,6 @@
-app.controller("OrdersListController", function ($scope, $http, $location) {
+app.controller("OrdersListController", function ($scope, $http, $location, $timeout,$routeParams) {
   $scope.orders = [];
-  $scope.selectedOrderDetails = {};
+  $scope.selectedOrderDetails = [];
 
   $scope.Orders = function () {
     $http
@@ -13,7 +13,6 @@ app.controller("OrdersListController", function ($scope, $http, $location) {
       });
   };
 
-  $scope.Orders();
 
   $scope.getStatusClass = function (status) {
     switch (status) {
@@ -34,30 +33,43 @@ app.controller("OrdersListController", function ($scope, $http, $location) {
 
 
   $scope.getOrderDetails = function (code) {
-    $location.path('/order-detail/' + code);
-    $http.get("http://localhost:8080/api/orders/" + code).then(function (response) {
-      
-        $scope.selectedOrderDetails = response.data[0];
-        console.log("Dữ liệu chi tiết đơn hàng:", response.data);
-      
-    
-      for (var key in $scope.selectedOrderDetails) {
-        if ($scope.selectedOrderDetails.hasOwnProperty(key)) {
-            console.log(key + ": " + $scope.selectedOrderDetails[key]);
-        }
-    }
+    $http
+      .get("http://localhost:8080/api/orders/" + code)
+      .then(function (response) {
+        $timeout(function () {
 
-    }).catch(function (error) {
-      console.error("Error fetching order by code:", error);
-    })
-  }
+
+          $scope.testVariable = "Test successful";
+
+
+          $scope.selectedOrderDetails = response.data[0];
+          console.log(response.data);
+          $location.path('/order-detail/' + code); 
+      })
+      })
+      .catch(function (error) {
+        console.error("Error fetching order by code:", error);
+      });
+  };
   $scope.goBack = function () {
     $location.path('/orders-list');
   }
-  $scope.formatCurrency = function(amount) {
+  $scope.formatCurrency = function (amount) {
     return new Intl.NumberFormat('vi-VN', { style: 'currency', currency: 'VND' }).format(amount);
   };
+
+
+  function init(){
+    if ($routeParams.code) {
+      $scope.getOrderDetails($routeParams.code);
+    } else {
+      $scope.Orders();
+    }
+  }
  
+  init();
+
+
 });
 
 
