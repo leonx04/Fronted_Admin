@@ -99,10 +99,7 @@ app.controller('VouchersController', function ($scope, $http, $interval, $timeou
     $scope.openAddModal = function () {
         $timeout(function () {
             $scope.isEditing = false;
-            $scope.voucherData = {
-                startDate: new Date(),
-                endDate: new Date()
-            };
+            $scope.voucherData = {};
         });
         $('#voucherModal').modal('show');
     };
