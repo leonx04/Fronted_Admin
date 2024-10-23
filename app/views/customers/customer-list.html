@@ -4,51 +4,99 @@
     <div class="spinner"></div>
 </div>
 <div ng-controller="CustomersListController">
-    <h3 class="h3 mb-2 text-gray-800">Quản lý khách hàng</h3>
-
+    <div class="row align-items-center mb-3">
+        <div class="col">
+            <h3 class="h3 mb-2 text-gray-800">Quản lý khách hàng</h3> 
+        </div>
+        <div class="col text-right">
+            <button class="btn btn-primary" type="button" data-toggle="collapse" data-target="#collapseExample"
+                aria-expanded="false" aria-controls="collapseExample">
+                Tìm kiếm
+            </button>
+        </div>
+    </div>
+    
+    
     <!-- Search and Filter -->
-    <!-- <div class="search-box border rounded p-3 mb-4">
-        <h5 class="mb-3">Search and Filter</h5>
-        <form ng-submit="searchCustomer()">
-            <div class="row">
-                <div class="col-md-3 mb-3">
-                    <input type="text" class="form-control" ng-model="searchParams.name" placeholder="Họ và tên">
-                </div>
-                <div class="col-md-3 mb-3">
-                    <input type="email" class="form-control" ng-model="searchParams.email" placeholder="Email">
-                </div>
-                <div class="col-md-3 mb-3">
-                    <input type="text" class="form-control" ng-model="searchParams.phone" placeholder="Số điện thoại">
-                </div>
-                <div class="col-md-3 mb-3">
-                    <select class="form-control" ng-model="searchParams.gender">
-                        <option value="" selected>Giới tính</option>
-                        <option value="1">Nam</option>
-                        <option value="0">Nữ</option>
-                    </select>
-                </div>
+    <div class="collapse mb-3" id="collapseExample">
+        <div class="card card-body">
+            <div class="search-box border rounded p-3 mb-2">
+                <h5 class="mb-3">Tìm kiếm và Lọc</h5>
+                <form ng-submit="searchCustomer(0)">
+                    <div class="row">
+                        <!-- Họ và tên -->
+                        <div class="col-md-3 mb-3">
+                            <input type="text" class="form-control" ng-model="searchParams.name" placeholder="Họ và tên">
+                        </div>
+                        <!-- Email -->
+                        <div class="col-md-3 mb-3">
+                            <input type="text" class="form-control" ng-model="searchParams.email" placeholder="Email">
+                        </div>
+                        <!-- Số điện thoại -->
+                        <div class="col-md-2 mb-3">
+                            <input type="number" class="form-control" ng-model="searchParams.phone" placeholder="Số điện thoại">
+                        </div>
+                        <!-- Giới tính -->
+                        <div class="col-md-2 mb-3">
+                            <select class="form-control" ng-model="searchParams.gender">
+                                <option value="" selected>Giới tính</option>
+                                <option value="1">Nam</option>
+                                <option value="0">Nữ</option>
+                            </select>
+                        </div>
+                        <!-- Trạng thái -->
+                        <div class="col-md-2 mb-3">
+                            <select class="form-control" ng-model="searchParams.status">
+                                <option value="" selected>Tất cả trạng thái</option>
+                                <option value="0">Không hoạt động</option>
+                                <option value="1">Hoạt động</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <!-- Nút tìm kiếm, reset, và thêm mới -->
+                        <div class="col-12 d-flex justify-content-between">
+                            <button type="submit" class="btn btn-primary me-2">Search</button>
+                            <button type="button" class="btn btn-secondary me-2" ng-click="resetForm()">Reset</button>
+                        </div>
+                    </div>
+                </form>
             </div>
-            <div class="row">
-                <div class="col-md-3 mb-3">
-                    <select class="form-control" ng-model="searchParams.status">
-                        <option value="" selected>Tất cả trạng thái</option>
-                        <option value="0">Không hoạt động</option>
-                        <option value="1">Hoạt động</option>
-                    </select>
-                </div>
-                <div class="col-12 d-flex justify-content-between">
-                    <button type="submit" class="btn btn-primary">Search</button>
-                    <button type="button" class="btn btn-secondary" ng-click="resetForm()">Reset</button>
-                    <button type="button" class="btn btn-success" ng-click="openAddModal()">Add new</button>
-                </div>
-            </div>
-        </form>
-    </div> -->
+        </div>
+    </div>
+    
+    <!-- Các nút khác -->
+    <div class="row mb-3">
+        <div class="col-md-12">
+          <div class="btn-group d-flex flex-wrap">
+            <button type="button" class="btn btn-secondary flex-grow-1 m-1">
+              <i class="fas fa-file-upload"></i> Tải từ file
+            </button>
+            <button type="button" class="btn btn-secondary flex-grow-1 m-1">
+              <i class="fas fa-print"></i> In dữ liệu
+            </button>
+            <button type="button" class="btn btn-secondary flex-grow-1 m-1">
+              <i class="fas fa-copy"></i> Sao chép
+            </button>
+            <button type="button" class="btn btn-secondary flex-grow-1 m-1">
+              <i class="fas fa-file-excel"></i> Xuất Excel
+            </button>
+            <button type="button" class="btn btn-secondary flex-grow-1 m-1">
+              <i class="fas fa-file-pdf"></i> Xuất PDF
+            </button>
+          </div>
+        </div>
+    </div>
 
     <!-- Customer List -->
     <div class="card shadow mb-4">
-        <div class="card-header py-3">
-            <h6 class="m-0 font-weight-bold text-primary">Danh sách khách hàng</h6>
+        <div class="card-header py-3 row align-items-center mb-3">
+            <div class="col">
+                <h6 class="m-0 font-weight-bold text-primary">Danh sách khách hàng</h6>
+            </div>
+            <div class="col text-right">
+                <button type="button" class="btn btn-success" ng-click="openAddModal()">Thêm mới</button>
+            </div>
         </div>
         <div class="card-body">
             <div class="table-responsive">
@@ -67,6 +115,12 @@
                         </tr>
                     </thead>
                     <tbody>
+                        <!-- Nếu danh sách khách hàng rỗng, hiển thị dòng thông báo -->
+                        <tr ng-if="customers == null && isSearching == true">
+                            <td colspan="9" class="text-center">Không tìm thấy khách hàng nào</td>
+                        </tr>
+
+                        <!-- Hiển thị các khách hàng nếu có -->
                         <tr ng-repeat="customer in customers track by $index" class="text-center">
                             <td>{{$index + 1}}</td>
                             <td>{{customer.code}}</td>
@@ -76,8 +130,10 @@
                             <td>{{customer.phone}}</td>
                             <td>{{customer.email}}</td>
                             <td>
-                                <span class="badge" ng-class="{'badge-success': customer.status == 1, 'badge-secondary': customer.status == 0}">
-                                    {{customer.status == 1 ? 'Hoạt động' : (customer.status == 2 ? 'Đã xóa' : 'Không hoạt động')}}
+                                <span class="badge"
+                                    ng-class="{'badge-success': customer.status == 1, 'badge-secondary': customer.status == 0}">
+                                    {{customer.status == 1 ? 'Hoạt động' : (customer.status == 2 ? 'Đã xóa' : 'Không
+                                    hoạt động')}}
                                 </span>
                             </td>
                             <td>
@@ -85,7 +141,8 @@
                                     <button class="btn btn-sm btn-info" ng-click="viewCustomer(customer.id)">
                                         <i class="fa fa-eye"></i>
                                     </button>
-                                    <button class="btn btn-sm btn-warning" ng-click="openUpdateStatusModal(customer.id)">
+                                    <button class="btn btn-sm btn-warning"
+                                        ng-click="openUpdateStatusModal(customer.id)">
                                         <i class="fa fa-edit"></i>
                                     </button>
                                     <button class="btn btn-sm btn-danger" ng-click="deleteCustomer(customer.id)">
@@ -99,14 +156,13 @@
             </div>
             <div class="d-flex justify-content-between align-items-center mt-3">
                 <p class="mb-0">
-                    Showing {{currentPage * pageSize + 1}} to {{Math.min((currentPage + 1) * pageSize,
-                    totalItems)}}
-                    of {{totalItems}} entries
+                    Trang {{currentPage + 1}} / {{totalPages}}
                 </p>
                 <nav aria-label="Page navigation" class="pagination-sm">
                     <ul class="pagination mb-0">
                         <li class="page-item" ng-class="{'disabled': currentPage === 0}">
-                            <a class="page-link" href ng-click="changePage(currentPage - 1)" aria-label="Previous">
+                            <a class="page-link" href ng-click="changePage(currentPage - 1)"
+                                aria-label="Previous">
                                 <span aria-hidden="true">&laquo;</span>
                             </a>
                         </li>
@@ -116,9 +172,8 @@
                         <li class="page-item disabled" ng-if="currentPage > 2">
                             <span class="page-link">...</span>
                         </li>
-                        <li class="page-item" 
-                                ng-class="{'active': currentPage === page}"
-                                ng-repeat="page in getPageRange()" ng-if="page !== 0 && page !== totalPages - 1">
+                        <li class="page-item" ng-class="{'active': currentPage === page}"
+                            ng-repeat="page in getPageRange()" ng-if="page !== 0 && page !== totalPages - 1">
                             <a class="page-link" href ng-click="changePage(page)">{{page + 1}}</a>
                         </li>
                         <li class="page-item disabled" ng-if="currentPage < totalPages - 3">
@@ -140,100 +195,109 @@
     </div>
 
 
-    
-<!-- Add/Edit Customer Modal -->
-<div class="modal fade" id="customerModal" tabindex="-1" role="dialog" aria-labelledby="customerModalLabel"
-aria-hidden="true">
-<div class="modal-dialog" role="document">
-    <div class="modal-content">
-        <div class="modal-header">
-            <h5 class="modal-title" id="customerModalTitle">{{isEditing ? 'Chỉnh Sửa' : 'Thêm'}} Khách Hàng</h5>
-            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                <span aria-hidden="true">&times;</span>
-            </button>
+
+    <!-- Add/Edit Customer Modal -->
+    <div class="modal fade" id="customerModal" tabindex="-1" role="dialog" aria-labelledby="customerModalLabel"
+        aria-hidden="true">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="customerModalTitle">{{isEditing ? 'Cập Nhật' : 'Thêm'}} Khách Hàng</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    <form id="customerForm" name="customerForm" novalidate>
+                        <div class="row mb-3">
+                            <div class="col-md-6">
+                                <label for="fullname">Họ và Tên</label>
+                                <input type="text" class="form-control" id="fullName" ng-model="customerData.fullName"
+                                    required>
+                            </div>
+                            <div class="col-md-6">
+                                <label for="gender">Giới tính</label>
+                                <select class="form-control" id="gender" ng-model="customerData.gender" required>
+                                    <option value="">Giới tính</option>
+                                    <option value="1" selected>Nam</option>
+                                    <option value="0">Nữ</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="row mb-3">
+                            <div class="col-md-6">
+                                <label for="birthdate">Ngày sinh</label>
+                                <input type="date" class="form-control" id="birthdate" ng-model="customerData.birthDate"
+                                    required>
+                            </div>
+                            <div class="col-md-6">
+                                <label for="phone">Số điện thoại</label>
+                                <input type="text" class="form-control" id="phone" ng-model="customerData.phone"
+                                    required>
+                            </div>
+                        </div>
+                        <div class="row mb-3" ng-if="customerData.id == null">
+                            <div class="col-md-6">
+                                <label for="email">Email</label>
+                                <input type="email" class="form-control" id="email" ng-model="customerData.email"
+                                    required>
+                            </div>
+                            <!-- <div class="col-md-6">
+                                <label for="status">Trạng thái</label>
+                                <select class="form-control" id="status" ng-model="customerData.status">
+                                    <option value="">Trạng thái</option>
+                                    <option value="0">Không hoạt động</option>
+                                    <option value="1">Hoạt động</option>
+                                    <option value="2">Đã xoá</option>
+                                </select>
+                            </div> -->
+                        </div>
+                        <!-- <div class="row mb-3">
+                            <div class="col-md-6">
+                                <label for="address">Địa chỉ</label>
+                                <input type="text" class="form-control" id="address" ng-model="customerData.address">
+                            </div>
+                        </div> -->
+                    </form>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Đóng</button>
+                    <button type="button" class="btn btn-primary" ng-click="saveCustomer()">Lưu</button>
+                </div>
+            </div>
         </div>
-        <div class="modal-body">
-            <form id="customerForm" name="customerForm" novalidate>
-                <div class="row mb-3">
-                    <div class="col-md-6">
-                        <label for="fullname">Họ và Tên</label>
-                        <input type="text" class="form-control" id="fullname" ng-model="customerData.fullName" required>
-                    </div>
-                    <div class="col-md-6">
-                        <label for="gender">Giới tính</label>
-                        <select class="form-control" id="gender" ng-model="customerData.gender" required>
-                            <option value="1">Nam</option>
-                            <option value="0">Nữ</option>
-                        </select>
-                    </div>
+    </div>
+
+    <!-- Modal Cập Nhật Trạng Thái -->
+    <div class="modal fade" id="updateStatusModal" tabindex="-1" role="dialog" aria-labelledby="updateStatusModalLabel"
+        aria-hidden="true">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="updateStatusModalLabel">Cập Nhật Trạng Thái Khách Hàng</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
                 </div>
-                <div class="row mb-3">
-                    <div class="col-md-6">
-                        <label for="birthdate">Ngày sinh</label>
-                        <input type="date" class="form-control" id="birthdate" ng-model="customerData.birthDate" required>
-                    </div>
-                    <div class="col-md-6">
-                        <label for="phone">Số điện thoại</label>
-                        <input type="text" class="form-control" id="phone" ng-model="customerData.phone" required>
-                    </div>
+                
+                <div class="modal-body">
+                    <form>
+                        <!-- Combobox trạng thái -->
+                        <div class="form-group">
+
+                            <label for="status">Trạng thái</label>
+                            <select class="form-control" id="status" ng-model="customerData.status">
+                                <option value="0" >Không hoạt động</option>
+                                <option value="1" >Hoạt động</option>
+                                <option value="2" >Đã xoá</option>
+                            </select>
+
+                        </div>
+                        <button type="submit" class="btn btn-primary" ng-click="updateStatus(customerData.status)">Cập
+                            Nhật Trạng Thái</button>
+                    </form>
                 </div>
-                <div class="row mb-3">
-                    <div class="col-md-6">
-                        <label for="email">Email</label>
-                        <input type="email" class="form-control" id="email" ng-model="customerData.email" required>
-                    </div>
-                    <div class="col-md-6">
-                        <label for="address">Địa chỉ</label>
-<input type="text" class="form-control" id="address" ng-model="customerData.address">
-                    </div>
-                </div>
-                <div class="row mb-3">
-                    <div class="col-md-6">
-                        <label for="status">Trạng thái</label>
-                        <select class="form-control" id="status" ng-model="customerData.status">
-                            <option value="">Trạng thái</option>
-                            <option value="0">Không hoạt động</option>
-                            <option value="1">Hoạt động</option>
-                            <option value="2">Đã xoá</option>
-                        </select>
-                    </div>
-                </div>
-            </form>
-        </div>
-        <div class="modal-footer">
-            <button type="button" class="btn btn-secondary" data-dismiss="modal">Đóng</button>
-            <button type="button" class="btn btn-primary" ng-click="saveCustomer()" ng-disabled="customerForm.$invalid">Lưu</button>
+            </div>
         </div>
     </div>
 </div>
-</div>
-
-<!-- Modal Cập Nhật Trạng Thái -->
-<div class="modal fade" id="updateStatusModal" tabindex="-1" role="dialog" aria-labelledby="updateStatusModalLabel" aria-hidden="true">
-<div class="modal-dialog" role="document">
-    <div class="modal-content">
-        <div class="modal-header">
-            <h5 class="modal-title" id="updateStatusModalLabel">Cập Nhật Trạng Thái Khách Hàng</h5>
-            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                <span aria-hidden="true">&times;</span>
-            </button>
-        </div>
-        <div class="modal-body">
-            <form>
-                <!-- Combobox trạng thái -->
-                <div class="form-group">
-                    <label for="customerStatus">Trạng Thái</label>
-                    <select class="form-control" id="customerStatus" ng-model="customerData.status" ng-init="customerData.status">
-                        <option value="0">Không hoạt động</option>
-                        <option value="1">Hoạt động</option>
-                        <option value="2">Đã xoá</option>
-                    </select>
-                </div>
-                <button type="submit" class="btn btn-primary" ng-click="updateStatus(customerData.status)">Cập Nhật Trạng Thái</button>
-            </form>
-        </div>
-    </div>
-</div>
-</div>
-</div>
-
