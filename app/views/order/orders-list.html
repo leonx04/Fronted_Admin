@@ -129,6 +129,90 @@
           border-bottom: 0;
         }
       }
+      .pagination-info {
+  font-size: 0.9rem;
+  color: #6c757d;
+}
+
+.pagination .page-link {
+  padding: 0.5rem 0.75rem;
+  color: #007bff;
+  background-color: #fff;
+  border: 1px solid #dee2e6;
+}
+
+.pagination .page-item.active .page-link {
+  z-index: 3;
+  color: #fff;
+  background-color: #007bff;
+  border-color: #007bff;
+}
+
+.pagination .page-item.disabled .page-link {
+  color: #6c757d;
+  pointer-events: none;
+  background-color: #fff;
+  border-color: #dee2e6;
+}
+
+@media (max-width: 768px) {
+  .pagination-info {
+    text-align: center;
+    margin-bottom: 1rem;
+  }
+  
+  .d-flex {
+    flex-direction: column;
+    align-items: center;
+  }
+}
+.form-label {
+  font-weight: 500;
+  margin-bottom: 0.5rem;
+}
+
+.card {
+  border: 1px solid rgba(0,0,0,.125);
+  border-radius: 0.25rem;
+  box-shadow: 0 2px 4px rgba(0,0,0,.05);
+}
+
+.btn {
+  padding: 0.475rem 1rem;
+  font-weight: 500;
+}
+
+.btn-primary {
+  background-color: #007bff;
+  border-color: #007bff;
+}
+
+.btn-primary:hover {
+  background-color: #0069d9;
+  border-color: #0062cc;
+}
+
+.btn-secondary {
+  background-color: #6c757d;
+  border-color: #6c757d;
+}
+
+.btn-secondary:hover {
+  background-color: #5a6268;
+  border-color: #545b62;
+}
+
+@media (max-width: 768px) {
+  .card-body {
+    padding: 1rem;
+  }
+  
+  .btn {
+    width: 100%;
+    margin-bottom: 0.5rem;
+  }
+}
+
     </style>
   </head>
   <body ng-controller="OrdersListController">
@@ -149,13 +233,52 @@
             </div>
           </div>
         </div>
-        <nav aria-label="breadcrumb">
-          <ol class="breadcrumb">
-            <li class="breadcrumb-item active">
-              <a href="#"><b>Danh sách đơn hàng</b></a>
-            </li>
-          </ol>
+        <nav aria-label="breadcrumb" class="mb-4">
+          <div class="card">
+            <div class="card-body">
+              <div class="row align-items-end">
+                <!-- Order Status Filter -->
+                <div class="col-md-3 mb-3">
+                  <label class="form-label">Trạng thái đơn hàng</label>
+                  <select 
+                    class="form-control" 
+                    ng-model="filters.status"
+                    ng-options="status.id as status.name for status in orderStatuses">
+                  </select>
+                </div>
+        
+                <!-- Order Type Filter -->
+                <div class="col-md-3 mb-3">
+                  <label class="form-label">Phương thức mua hàng</label>
+                  <select 
+                    class="form-control" 
+                    ng-model="filters.orderType"
+                    ng-options="type.id as type.name for type in orderTypes">
+                  </select>
+                </div>
+        
+                <!-- Search Button -->
+                <div class="col-md-3 mb-3">
+                  <button 
+                    class="btn btn-primary w-100" 
+                    ng-click="searchOrders()">
+                    <i class="fas fa-search mr-2"></i>Tìm kiếm
+                  </button>
+                </div>
+        
+                <!-- Reset Button -->
+                <div class="col-md-3 mb-3">
+                  <button 
+                    class="btn btn-secondary w-100" 
+                    ng-click="resetFilters()">
+                    <i class="fas fa-undo mr-2"></i>Đặt lại
+                  </button>
+                </div>
+              </div>
+            </div>
+          </div>
         </nav>
+        
         <div id="clock" class="text-right"></div>
       </div>
 
@@ -189,12 +312,12 @@
           <thead class="thead-dark">
             <tr>
               <th>Mã đơn hàng</th>
+              <th>Thời gian tạo</th>
               <th>Khách hàng</th>
-              <th>Nhân viên thực hiện</th>
               <th>Phương thức mua hàng</th>
               <th>Tổng tiền</th>
               <th>Tình trạng</th>
-              <th>Thời gian tạo</th>
+              <th>Thời gian cập nhật</th>
               <th>Tính năng</th>
             </tr>
           </thead>
@@ -202,8 +325,9 @@
           <tbody>
             <tr ng-repeat="order in orders">
               <td data-label="Mã đơn hàng">{{order.code}}</td>
+              <td data-label="Thời gian tạo">{{order.createdAt}}</td>
               <td data-label="Khách hàng">{{order.customerName}}</td>
-              <td data-label="Nhân viên thực hiện">{{order.employee}}</td>
+              
               <td data-label="Phương thức mua hàng">{{order.orderType}}</td>
               <td data-label="Tổng tiền">{{order.totalAmount}}</td>
               <td data-label="Tình trạng">
@@ -211,7 +335,7 @@
                   {{order.status}}
                 </span>
               </td>
-              <td data-label="Thời gian tạo">{{order.createdAt}}</td>
+              <td data-label="Thời gian cập nhật">{{order.updatedAt}}</td>
               <td data-label="Tính năng">
                 <button
                   class="btn btn-sm btn-primary"
@@ -225,6 +349,40 @@
           </tbody>
         </table>
       </div>
+
+      <div class="d-flex justify-content-between align-items-center mt-3">
+        <div class="pagination-info">
+          Hiển thị {{pagination.currentPage * pagination.pageSize + 1}} đến 
+          {{Math.min((pagination.currentPage + 1) * pagination.pageSize, pagination.totalElements)}}
+          trong tổng số {{pagination.totalElements}} đơn hàng
+        </div>
+        
+        <nav aria-label="Page navigation">
+          <ul class="pagination">
+            <!-- Previous button -->
+            <li class="page-item" ng-class="{disabled: pagination.currentPage === 0}">
+              <a class="page-link" href="#" ng-click="changePage(pagination.currentPage - 1)">
+                <span aria-hidden="true">&laquo;</span>
+              </a>
+            </li>
+            
+            <!-- Page numbers -->
+            <li class="page-item" 
+                ng-repeat="page in getPageNumbers()" 
+                ng-class="{active: page === pagination.currentPage}">
+              <a class="page-link" href="#" ng-click="changePage(page)">{{page + 1}}</a>
+            </li>
+            
+            <!-- Next button -->
+            <li class="page-item" ng-class="{disabled: pagination.currentPage === pagination.totalPages - 1}">
+              <a class="page-link" href="#" ng-click="changePage(pagination.currentPage + 1)">
+                <span aria-hidden="true">&raquo;</span>
+              </a>
+            </li>
+          </ul>
+        </nav>
+      </div>
+
     </div>
 
     <script src="/app/controller/orders/orders-list.controller.js"></script>

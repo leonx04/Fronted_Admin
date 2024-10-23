@@ -17,7 +17,6 @@
   <body ng-controller="OrdersListController">
 
 
-    <p>Test Variable: {{testVariable}}</p>
 
     <div class="container my-5" ng-if="selectedOrderDetails">
       <div class="d-flex align-items-center mb-4">
@@ -107,23 +106,17 @@
           </div>
 
           <div class="invoice-totals">
-            <div class="row">
+            <div class="invoice-row">
               <span class="label">Phí Vận Chuyển</span>
-              <span class="value"
-                >{{formatCurrency(selectedOrderDetails.shippingCost)}}</span
-              >
+              <span class="value">{{formatCurrency(selectedOrderDetails.shippingCost)}}</span>
             </div>
-            <div class="row">
+            <div class="invoice-row">
               <span class="label">Voucher</span>
-              <span class="value"
-                >{{formatCurrency(selectedOrderDetails.voucherCode)}}</span
-              >
+              <span class="value">{{formatCurrency(selectedOrderDetails.voucherCode)}}</span>
             </div>
-            <div class="row">
+            <div class="invoice-row">
               <span class="label total">Tổng cộng</span>
-              <span class="value total"
-                >{{formatCurrency(selectedOrderDetails.totalAmount)}}</span
-              >
+              <span class="value total">{{formatCurrency(selectedOrderDetails.totalAmount)}}</span>
             </div>
           </div>
         </div>

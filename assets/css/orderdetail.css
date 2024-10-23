@@ -165,7 +165,21 @@
     border-top: 1px solid #dee2e6;
     padding-top: 1rem;
   }
-  
+
+  .invoice-totals .invoice-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 0.5rem;
+    padding: 0.5rem 0;
+  }
+
+  .invoice-totals .invoice-row:last-child {
+    border-top: 1px solid #dee2e6;
+    padding-top: 0.5rem;
+    margin-top: 0.5rem;
+  }
+
   .invoice-totals .row {
     display: flex;
     justify-content: space-between;
@@ -192,22 +206,23 @@
   }
   
   @media (max-width: 767px) {
-    .invoice-totals .row {
-      display: grid;
-      grid-template-columns: 1fr 1fr;
-      gap: 0.5rem;
-      align-items: baseline;
-    }
+    .invoice-totals .invoice-row {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 0.5rem;
+    align-items: baseline;
+  }
+
   
-    .invoice-totals .row:not(:last-child) {
-      grid-template-columns: minmax(auto, 1fr) minmax(100px, auto);
-    }
+  .invoice-totals .invoice-row:not(:last-child) {
+    grid-template-columns: minmax(auto, 1fr) minmax(100px, auto);
+  }
   
-    .invoice-totals .row:not(:last-child) .value {
-      white-space: nowrap;
-      overflow: hidden;
-      text-overflow: ellipsis;
-    }
+  .invoice-totals .invoice-row:not(:last-child) .value {
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
   
     .invoice-totals .value {
       text-align: right;
@@ -220,11 +235,11 @@
   }
   
   @media (max-width: 380px) {
-    .invoice-totals .row:last-child {
+    .invoice-totals .invoice-row:last-child {
       grid-template-columns: 1fr;
     }
   
-    .invoice-totals .row:last-child .value {
+    .invoice-totals .invoice-row:last-child .value {
       text-align: left;
     }
   }
