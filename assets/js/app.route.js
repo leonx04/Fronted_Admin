@@ -74,7 +74,7 @@ app.config(function ($routeProvider) {
       title: 'Danh Sách Phiếu Giảm Giá'
     })
     .when('/employees', {
-      templateUrl: 'app/views/staff/employees.html',
+      templateUrl: 'app/views/staff/employees_list.html',
       controller: 'EmployeesController',
       title: 'Quản Lý Nhân Viên'
     })

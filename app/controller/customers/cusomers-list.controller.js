@@ -38,7 +38,9 @@ app.controller('CustomersListController', function ($scope, $http, $interval, $t
     $scope.quantityData = true;
     // Page
     $scope.page = 0;
-    $scope.listPage =
+
+    // lấy lỗi
+    $scope.validationErrors = [];
 
         // Hàm tải danh sách khách hàng
         $scope.loadData = function (page) {
@@ -66,7 +68,7 @@ app.controller('CustomersListController', function ($scope, $http, $interval, $t
     function updateCustomerData(data) {
         $scope.customers = data.data[0];
         $scope.currentPage = $scope.page;
-        $scope.totalItems = data.totalPage;
+        // $scope.totalItems = data.totalPage;
         $scope.totalPages = data.totalPage;
     }
 
@@ -90,6 +92,56 @@ app.controller('CustomersListController', function ($scope, $http, $interval, $t
         }
     }
 
+    // Hàm validate customer
+    $scope.validateCustomer = function () {
+        $scope.validationErrors = []; // Reset lỗi
+
+        if (!$scope.customerData.fullName || $scope.customerData.fullName.trim() === '') {
+            $scope.validationErrors.push('Tên Khách hàng không được để trống');
+        }
+
+        // kiểm tra sdt trống, độ dài >= 10, là số
+        if (!$scope.customerData.phone || $scope.customerData.phone.trim() === '') {
+            $scope.validationErrors.push('Số điện thoại không được để trống');
+        } else {
+            let phone = $scope.customerData.phone;
+            if (isNaN(phone) || phone.length < 10) {
+                $scope.validationErrors.push('Số điện thoại không hợp lệ');
+            }
+        }
+
+        // kiểm tra email trống, đúng định dạng
+        if (!$scope.customerData.email || $scope.customerData.email.trim() === '') {
+            $scope.validationErrors.push('Email không được để trống');
+        } else {
+            let email = $scope.customerData.email;
+            if (!email.includes('@') || !email.includes('.')) {
+                $scope.validationErrors.push('Email không hợp lệ');
+            }
+        }
+
+        // if (!$scope.customerData.endDate) {
+        //     $scope.validationErrors.push('Ngày kết thúc không được để trống');
+        // }
+
+        // if ($scope.customerData.startDate && $scope.customerData.endDate) {
+        //     if ($scope.customerData.startDate >= $scope.customerData.endDate) {
+        //         $scope.validationErrors.push('Ngày kết thúc phải sau ngày bắt đầu');
+        //     }
+        // }
+
+        // if ($scope.customerData.discountPercentage === undefined || $scope.customerData.discountPercentage === null) {
+        //     $scope.validationErrors.push('Giá trị giảm giá không được để trống');
+        // } else {
+        //     let discountValue = parseFloat($scope.customerData.discountPercentage);
+        //     if (isNaN(discountValue) || discountValue <= 0 || discountValue > 90) {
+        //         $scope.validationErrors.push('Giá trị giảm giá phải là số dương và không vượt quá 90%');
+        //     }
+        // }
+
+        return $scope.validationErrors.length === 0;
+    };
+
     // Hàm đặt lại form tìm kiếm
     $scope.resetForm = function () {
         $scope.searchParams = {};
@@ -110,10 +162,13 @@ app.controller('CustomersListController', function ($scope, $http, $interval, $t
             return; // Không cho phép chuyển sang trang không hợp lệ
         }
         $scope.currentPage = page; // Cập nhật trang hiện tại
-        if ($scope.isSearching) {
-            $scope.searchCustomer(); // Nếu đang tìm kiếm, gọi lại hàm tìm kiếm
-        } else {
+        console.log("trạng thái tìm kiếm ", $scope.isSearching, page);
+        if (!$scope.isSearching) {
+            console.log("load");
             $scope.loadData(page); // Nếu không, gọi lại loadData để lấy dữ liệu cho trang mới
+        } else {
+            console.log("search");
+            $scope.searchCustomer(page); // Nếu đang tìm kiếm, gọi lại hàm tìm kiếm
         }
     };
 
@@ -145,47 +200,28 @@ app.controller('CustomersListController', function ($scope, $http, $interval, $t
             });
     };
 
-    // Hàm thêm khách hàng
+    // Hàm lưu khách hàng
     $scope.saveCustomer = function () {
-        // // nếu có id thì là update còn không thì là add
-        // const method = $scope.customerData.id ? 'PUT' : 'POST';
-        // const url = $scope.customerData.id ? `${API_URL}/${$scope.customerData.id}` : API_URL;
-        // console.log(url, $scope.customerData);
-        // $http({
-        //     method: method,
-        //     url: url,
-        //     data: $scope.customerData
-        // }).then(function (response) {
-        //     $scope.loadData(0);
-        //     $('#customerModal').modal('hide');
-        // }).catch(function (error) {
-        //     console.error("Lỗi khi lưu khách hàng:", error);
-        // });
-
-        const formData = new FormData();
-        for (let key in $scope.customerData) {
-            formData.append(key, $scope.customerData[key]);
+        if ($scope.customerData.birthDate) {
+            // Đảm bảo chuyển đổi sang định dạng yyyy-MM-dd
+            $scope.customerData.birthDate = new Date($scope.customerData.birthDate);
         }
-        if ($scope.customerData.avatar) {
-            formData.append('avatar', $scope.customerData.avatar);
-        }
-
+        
         const method = $scope.customerData.id ? 'PUT' : 'POST';
         const url = $scope.customerData.id ? `${API_URL}/${$scope.customerData.id}` : API_URL;
-
+        
         $http({
             method: method,
             url: url,
-            data: formData,
-            headers: { 'Content-Type': undefined } // để Angular tự đặt đúng boundary
+            data: $scope.customerData
         }).then(function (response) {
             $scope.loadData(0);
             $('#customerModal').modal('hide');
         }).catch(function (error) {
             console.error("Lỗi khi lưu khách hàng:", error);
         });
-
-    }
+    };
+    
 
     // Mở modal updateStatus và lưu ID khách hàng
     $scope.openUpdateStatusModal = function (id) {
@@ -195,11 +231,14 @@ app.controller('CustomersListController', function ($scope, $http, $interval, $t
             .then(function (response) {
                 console.log("API response:", response.data);  // Xem kết quả trả về từ API
                 if (response.data && response.data.id) {  // Kiểm tra dữ liệu trả về có hợp lệ không
+                    
                     $scope.customerData = response.data;  // Gán dữ liệu vào customerData
                     console.log("Dữ liệu khách hàng: ", $scope.customerData);  // Kiểm tra dữ liệu trước khi mở modal
                     $scope.customerData.birthDate = new Date(response.data.birthDate);
+                    
                     $scope.customerData.status = String($scope.customerData.status);
                     console.log("Status khách hàng khi mở modal: ", $scope.customerData.status);  // Kiểm tra status
+                    
                     $scope.currentCustomerId = id;  // Lưu ID khách hàng vào $scope.currentCustomerId
                     console.log("ID khách hàng khi mở modal: ", $scope.currentCustomerId);  // Kiểm tra ID
                     $('#updateStatusModal').modal('show');  // Hiển thị modal
@@ -276,6 +315,8 @@ app.controller('CustomersListController', function ($scope, $http, $interval, $t
 
     // Search customer
     $scope.searchCustomer = function (page) {
+        // if ($scope.currentPage)
+        console.log("trang : ", page)
 
         const params = {
             name: $scope.searchParams.name || null,
@@ -283,30 +324,38 @@ app.controller('CustomersListController', function ($scope, $http, $interval, $t
             phone: $scope.searchParams.phone || null,
             gender: $scope.searchParams.gender || null,
             status: $scope.searchParams.status || null,
-            page: page
+            page: 4
         };
 
-        $scope.isLoading = true;
-        $scope.isSearching = true; // Đặt trạng thái đang tìm kiếm
+        if (!params.name && !params.email && !params.phone && !params.gender && !params.status) {
+            // toastr.warning("Vui lòng nhập ít nhất một trường để tìm kiếm.");
+            $scope.loadData(0)
+        } else {
+            console.log(params)
 
-        $http.get(API_URL + "/search", { params: params })
-            .then(function (response) {
-                if (response.data && response.data.data && response.data.data.length > 0) {
-                    updateCustomerData(response.data);
-                } else {
-                    $scope.customers = []; // Đặt danh sách khách hàng thành rỗng
-                    toastr.warning("Không tìm thấy khách hàng nào.");
-                }
-            })
-            .catch(function (error) {
-                console.error("Lỗi khi tìm kiếm khách hàng:", error);
-                toastr.error("Lỗi khi tìm kiếm khách hàng.");
-            })
-            .finally(function () {
-                $scope.isLoading = false;
-                $scope.isSearching = false; // Kết thúc trạng thái tìm kiếm
-                // Tùy chọn: có thể gọi lại startAutoUpdate() nếu muốn tiếp tục auto-update sau khi tìm kiếm
-            });
+            $scope.isLoading = true;
+            $scope.isSearching = true; // Đặt trạng thái đang tìm kiếm
+
+            $http.get(API_URL + "/search", { params: params })
+                .then(function (response) {
+                    if (response.data && response.data.data && response.data.data.length > 0) {
+                        updateCustomerData(response.data);
+                    } else {
+                        $scope.customers = []; // Đặt danh sách khách hàng thành rỗng
+                        toastr.warning("Không tìm thấy khách hàng nào.");
+                    }
+                })
+                .catch(function (error) {
+                    console.error("Lỗi khi tìm kiếm khách hàng:", error);
+                    toastr.error("Lỗi khi tìm kiếm khách hàng.");
+                })
+            // .finally(function () {
+            //     $scope.isLoading = true;
+            //     $scope.isSearching = true; // Kết thúc trạng thái tìm kiếm
+            //     // Tùy chọn: có thể gọi lại startAutoUpdate() nếu muốn tiếp tục auto-update sau khi tìm kiếm
+            // });
+        }
+
     };
 
 
