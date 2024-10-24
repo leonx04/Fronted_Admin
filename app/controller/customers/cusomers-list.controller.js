@@ -327,6 +327,7 @@ app.controller('CustomersListController', function ($scope, $http, $interval, $t
             page: 4
         };
 
+        // 
         if (!params.name && !params.email && !params.phone && !params.gender && !params.status) {
             // toastr.warning("Vui lòng nhập ít nhất một trường để tìm kiếm.");
             $scope.loadData(0)
